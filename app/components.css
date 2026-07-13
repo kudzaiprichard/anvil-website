@@ -9,6 +9,49 @@
   pointer-events: none;
 }
 
+/* ---- background preview switcher (review tool) ---- */
+
+.bg-switch {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in oklab, var(--iron-0) 88%, transparent);
+  backdrop-filter: blur(12px);
+}
+.bg-switch__btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--bone-dim);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.bg-switch__btn:hover {
+  color: var(--ember);
+  border-color: color-mix(in oklab, var(--ember) 60%, var(--line));
+}
+.bg-switch__label {
+  min-width: 215px;
+  text-align: center;
+  color: var(--bone-dim);
+}
+
 /* ---- scroll progress ---- */
 
 .progress {
