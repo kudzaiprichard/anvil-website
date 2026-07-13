@@ -1,0 +1,72 @@
+/*
+ * Anvil website — theme foundation ("forged iron & ember").
+ * Warm iron neutrals (hue ~60) under a single ember-copper accent, pulled from
+ * the Anvil desktop app's design system. The full component styles land next.
+ */
+
+:root {
+  --iron-960: oklch(0.148 0.007 60);
+  --iron-940: oklch(0.172 0.008 61);
+  --bone: oklch(0.932 0.006 82);
+  --bone-dim: oklch(0.72 0.012 72);
+  --ember: oklch(0.72 0.155 50);
+  --ember-hot: oklch(0.8 0.14 62);
+
+  --font-display: var(--font-space-grotesk), var(--font-spline-sans), system-ui, sans-serif;
+  --font-body: var(--font-spline-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--bone);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--iron-960);
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, oklch(0.72 0.155 50 / 0.22), transparent 55%),
+    linear-gradient(180deg, var(--iron-940), var(--iron-960));
+  background-attachment: fixed;
+}
+
+.scaffold {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  padding: 24px;
+}
+.scaffold__tile {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: linear-gradient(155deg, #f4924b, #d6621f 45%, #a83e10);
+  box-shadow: 0 22px 60px -20px oklch(0.72 0.16 50 / 0.85);
+}
+.scaffold__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ember-hot);
+}
+.scaffold__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.scaffold__lead {
+  color: var(--bone-dim);
+  max-width: 44ch;
+}

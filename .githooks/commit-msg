@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#
+# Enforce the Anvil commit convention (see the anvil repo's .docs/GIT_CONVENTIONS.md):
+#
+#   type(scope): short summary
+#   - path/one: what changed
+#   - path/two: what changed
+#
+# Rules:
+#   * first line is conventional-commits: type(scope): summary
+#   * one "- " bullet per file staged in the commit
+#
+# Merge/revert/fixup commits are exempted.
+
+set -euo pipefail
+
+msg_file="$1"
+first_line="$(head -n1 "$msg_file")"
+
+# Exempt merges, reverts, and fixups (their shape is fixed by git/tools).
+case "$first_line" in
+  "Merge "* | "Revert "* | "fixup!"* | "squash!"* )
+    exit 0 ;;
+esac
+
+# 1) Header must match: type(optional-scope): summary
+header_re='^(feat|fix|docs|chore|refactor|style|test|perf|build|ci|revert)(\([a-z0-9./-]+\))?: .+'
+if ! printf '%s' "$first_line" | grep -Eq "$header_re"; then
+  echo "commit-msg: first line must be 'type(scope): summary'." >&2
+  echo "  got: $first_line" >&2
+  echo "  types: feat fix docs chore refactor style test perf build ci revert" >&2
+  exit 1
+fi
+
+# 2) One '- ' bullet per staged file.
+staged_count="$(git diff --cached --name-only --diff-filter=ACMRD | grep -c . || true)"
+bullet_count="$(grep -cE '^- ' "$msg_file" || true)"
+
+if [ "$staged_count" -gt 0 ] && [ "$bullet_count" -ne "$staged_count" ]; then
+  echo "commit-msg: expected one '- ' bullet per file." >&2
+  echo "  staged files: $staged_count, bullets: $bullet_count" >&2
+  git diff --cached --name-only --diff-filter=ACMRD | sed 's/^/    - /' >&2
+  exit 1
+fi
+
+exit 0
