@@ -2,13 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Reveal from "./Reveal";
-import {
-  AppleIcon,
-  ArrowIcon,
-  DownloadIcon,
-  LinuxIcon,
-  WindowsIcon,
-} from "./icons";
+import { AppleIcon, ArrowIcon, DownloadIcon, LinuxIcon, WindowsIcon } from "./icons";
 import {
   PLATFORMS,
   VERSION,
@@ -36,16 +30,18 @@ function detectOS(): Platform["id"] | null {
 function PlatformCard({ p, isCurrent }: { p: Platform; isCurrent: boolean }) {
   const Icon = OS_ICON[p.id];
   return (
-    <div className={`card dl-card ${isCurrent ? "dl-card--current" : ""}`}>
-      {isCurrent && <span className="dl-card__badge microlabel">Detected</span>}
+    <div className={`dl-card ${isCurrent ? "dl-card--current" : ""}`}>
       <div className="dl-card__head">
-        <span className="dl-card__icon">
-          <Icon width={26} height={26} />
-        </span>
-        <div>
-          <h3 className="dl-card__name">{p.name}</h3>
-          <p className="dl-card__note microlabel">{p.note}</p>
+        <div className="dl-card__id">
+          <span className="dl-card__icon">
+            <Icon width={22} height={22} />
+          </span>
+          <div>
+            <h3 className="dl-card__name">{p.name}</h3>
+            <span className="dl-card__note mono">{p.note}</span>
+          </div>
         </div>
+        {isCurrent && <span className="dl-card__badge mono">Detected</span>}
       </div>
 
       <ul className="dl-card__assets">
@@ -57,13 +53,12 @@ function PlatformCard({ p, isCurrent }: { p: Platform; isCurrent: boolean }) {
               download
             >
               <span className="dl-btn__main">
-                <DownloadIcon width={15} height={15} />
                 <span className="dl-btn__label">{a.label}</span>
                 <span className="dl-btn__detail">{a.detail}</span>
               </span>
               <span className="dl-btn__meta">
-                <span className="dl-btn__ver">v{VERSION}</span>
-                <span className="dl-btn__size">{a.size}</span>
+                <span>{a.size}</span>
+                <DownloadIcon width={14} height={14} />
               </span>
             </a>
           </li>
@@ -79,30 +74,27 @@ export default function Download() {
 
   const ordered = useMemo(() => {
     if (!os) return PLATFORMS;
-    return [...PLATFORMS].sort((a, b) =>
-      a.id === os ? -1 : b.id === os ? 1 : 0,
-    );
+    return [...PLATFORMS].sort((a, b) => (a.id === os ? -1 : b.id === os ? 1 : 0));
   }, [os]);
 
   return (
     <section className="section" id="download">
       <div className="container">
-        <Reveal className="section-head dl-head">
-          <p className="eyebrow microlabel microlabel--ember">Download</p>
+        <Reveal className="dl-head">
+          <p className="mono mono--ember">Download</p>
           <h2 className="section-title">Get Anvil for your machine.</h2>
-          <p className="lead">
-            Free forever. Pick your platform below — every build is the latest release, published to a
-            dedicated release repo and signed into the app.
-          </p>
           <div className="dl-release">
-            <span className="chip">
-              <span className="dot" />
-              Latest · v{VERSION}
+            <span className="mono">
+              Latest v{VERSION} · Released {RELEASE_DATE}
             </span>
-            <span className="microlabel dl-release__date">Released {RELEASE_DATE}</span>
-            <a className="dl-release__link microlabel microlabel--ember" href={LATEST_RELEASE_URL} target="_blank" rel="noreferrer">
+            <a
+              className="dl-release__link mono mono--ember"
+              href={LATEST_RELEASE_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
               Release notes
-              <ArrowIcon width={13} height={13} />
+              <ArrowIcon width={12} height={12} />
             </a>
           </div>
         </Reveal>
@@ -116,9 +108,9 @@ export default function Download() {
         </div>
 
         <p className="dl-foot">
-          Looking for older builds or checksums?{" "}
+          Older builds and checksums live on{" "}
           <a href={RELEASES_URL} target="_blank" rel="noreferrer">
-            See all releases on GitHub
+            GitHub releases
           </a>
           . Prefer to build from source? The <code>README</code> has you covered.
         </p>
