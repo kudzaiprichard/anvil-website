@@ -8,22 +8,25 @@ import Features from "@/components/Features";
 import OpenSource from "@/components/OpenSource";
 import Download from "@/components/Download";
 import Footer from "@/components/Footer";
+import { getLatestRelease } from "@/lib/releases";
 
-export default function Home() {
+export default async function Home() {
+  const release = await getLatestRelease();
+
   return (
     <>
       <BackgroundSwitcher />
       <Instruments />
       <Marquee />
-      <Nav />
+      <Nav version={release.version} />
       <main>
-        <Hero />
+        <Hero version={release.version} releaseUrl={release.url} />
         <Manifesto />
         <Features />
         <OpenSource />
-        <Download />
+        <Download release={release} />
       </main>
-      <Footer />
+      <Footer version={release.version} />
     </>
   );
 }

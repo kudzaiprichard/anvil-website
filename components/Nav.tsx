@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { AnvilMark, GitHubIcon } from "./icons";
-import { REPO_URL, VERSION } from "@/lib/releases";
+import { REPO_URL } from "@/lib/releases";
 
-export default function Nav() {
+export default function Nav({ version }: { version: string }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Nav() {
         <a href="#top" className="brand" aria-label="Anvil home">
           <AnvilMark className="brand__mark" />
           <span className="brand__word">Anvil</span>
-          <span className="brand__ver mono">v{VERSION}</span>
+          <span className="brand__ver mono">v{version}</span>
         </a>
 
         <nav className="nav__links" aria-label="Primary">
