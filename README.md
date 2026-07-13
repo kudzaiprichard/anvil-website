@@ -24,8 +24,9 @@ version and file sizes.
 
 Highlights:
 
-- **Living background** — a full-page flow-field canvas of bone-and-ember particle streaks that
-  drifts with time, shifts on scroll, and bends away from the cursor.
+- **Living background** — a full-page graph of drifting nodes and hairline edges; every few
+  seconds a breadth-first search launches from a random node and its ember wave sweeps the graph
+  hop by hop. Nodes parallax with scroll and edges reach for the cursor.
 - **The product demoing itself** — a typed headline cycling DSA patterns, and a faux Anvil window
   that materializes a solution line by line, then runs its test packs to green on loop.
 - **Iron & ember theme** — warm charcoal neutrals under one flat ember-copper accent, lifted from
