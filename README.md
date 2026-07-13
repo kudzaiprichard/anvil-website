@@ -8,7 +8,7 @@ The marketing & download site for **[Anvil](https://github.com/kudzaiprichard/an
 offline, honest way to master DSA.
 
 Built with **Next.js 16** · React 19 · TypeScript. Themed to match the Anvil desktop app's
-"forged iron & ember" design system.
+iron-and-ember design system.
 
 </div>
 
@@ -24,8 +24,12 @@ version and file sizes.
 
 Highlights:
 
-- **Forge aesthetic** — warm iron neutrals under a single ember-copper accent, lifted from the app's
-  OKLCH theme, with an animated canvas of rising embers behind the hero.
+- **Living background** — a full-page flow-field canvas of bone-and-ember particle streaks that
+  drifts with time, shifts on scroll, and bends away from the cursor.
+- **The product demoing itself** — a typed headline cycling DSA patterns, and a faux Anvil window
+  that materializes a solution line by line, then runs its test packs to green on loop.
+- **Iron & ember theme** — warm charcoal neutrals under one flat ember-copper accent, lifted from
+  the app's OKLCH design system. No glows, no gradients.
 - **Platform-aware downloads** — detects the visitor's OS and surfaces the right build first.
 - **Accessible & responsive** — keyboard focus states, reduced-motion support, mobile down to 360px.
 
