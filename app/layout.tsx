@@ -1,23 +1,17 @@
 import type { Metadata } from "next";
-import { Spline_Sans, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const splineSans = Spline_Sans({
-  variable: "--font-spline-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -39,7 +33,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Kudzai P Matizirofa" }],
   openGraph: {
-    title: "Anvil — Forge the pattern recognition that survives the interview",
+    title: "Anvil — The free, offline, honest way to master DSA",
     description:
       "Open-source, offline-first DSA practice. A guided course of original problems, oracle-verified judging, no AI crutch. Free & MIT-licensed.",
     url: SITE_URL,
@@ -67,7 +61,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${splineSans.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
+      className={`${archivo.variable} ${plexMono.variable}`}
     >
       <body>{children}</body>
     </html>
