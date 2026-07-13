@@ -1,46 +1,45 @@
 /*
- * Anvil website — "forged iron & ember".
+ * Anvil website — "iron field".
  *
- * The palette is lifted straight from the Anvil desktop app's design system:
- * warm iron neutrals (hue ~60, never blue) under a single ember-copper accent
- * pulled off the app icon's gradient (#FFB871 -> #F4924B -> #D6621F -> #A83E10).
- * The site reads like the inside of a forge: dark warm metal, one hot glow.
+ * A cinematic dark site over a living background: a flow-field of ember and
+ * bone particles drifting across an iron plate. Warm charcoal neutrals
+ * (hue ~60, never blue) from the desktop app's design system under one flat
+ * ember-copper accent (the app icon's #D6621F family). No glows, no gradients
+ * on surfaces — motion and precision carry the design.
  */
 
 @import "./components.css";
 
 :root {
-  /* iron neutrals — warm charcoal, layered like the app's dark surfaces */
-  --iron-960: oklch(0.148 0.007 60);
-  --iron-940: oklch(0.172 0.008 61);
-  --iron-900: oklch(0.192 0.0085 62);
-  --iron-850: oklch(0.222 0.009 62);
-  --iron-820: oklch(0.248 0.01 62);
-  --iron-780: oklch(0.285 0.012 62);
+  /* iron neutrals — warm charcoal plate */
+  --iron-0: oklch(0.13 0.006 60);
+  --iron-1: oklch(0.16 0.008 61);
+  --iron-2: oklch(0.2 0.009 62);
+  --iron-3: oklch(0.26 0.01 62);
 
   /* bone text */
-  --bone: oklch(0.932 0.006 82);
-  --bone-dim: oklch(0.72 0.012 72);
-  --bone-faint: oklch(0.6 0.013 68);
+  --bone: oklch(0.935 0.006 82);
+  --bone-dim: oklch(0.69 0.012 72);
+  --bone-faint: oklch(0.47 0.012 68);
 
-  /* ember-copper accent (app dark primary + a hotter highlight) */
+  /* ember-copper accent — flat, no gradients */
   --ember: oklch(0.72 0.155 50);
-  --ember-hot: oklch(0.8 0.14 62);
-  --ember-glow: #ffb871;
-  --ember-deep: #a83e10;
-  --ember-ink: oklch(0.17 0.02 50);
+  --ember-dim: oklch(0.58 0.125 48);
+  --ember-ink: oklch(0.16 0.02 50);
 
-  /* structure */
-  --border: oklch(0.93 0.01 80 / 9%);
-  --border-strong: oklch(0.93 0.01 80 / 16%);
-  --ring: oklch(0.72 0.155 50 / 55%);
+  /* hairlines */
+  --line: oklch(0.93 0.01 80 / 9%);
+  --line-strong: oklch(0.93 0.01 80 / 17%);
+  --ring: oklch(0.72 0.155 50 / 60%);
 
-  --radius: 14px;
-  --maxw: 1120px;
+  --radius: 16px;
+  --maxw: 1140px;
+  --pad: 24px;
 
-  --font-display: var(--font-space-grotesk), var(--font-spline-sans), system-ui, sans-serif;
-  --font-body: var(--font-spline-sans), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *,
@@ -51,7 +50,7 @@
 
 * {
   margin: 0;
-  border-color: var(--border);
+  border-color: var(--line);
 }
 
 html {
@@ -68,31 +67,20 @@ html {
 body {
   min-height: 100vh;
   color: var(--bone);
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background-color: var(--iron-960);
-  /* Forge lighting: a hot glow bleeding down from the top, a faint floor
-     ember, cooling into deep iron everywhere else. */
-  background-image:
-    radial-gradient(120% 80% at 50% -10%, oklch(0.72 0.155 50 / 0.22), transparent 55%),
-    radial-gradient(90% 60% at 50% 108%, oklch(0.6 0.14 40 / 0.1), transparent 60%),
-    linear-gradient(180deg, var(--iron-940), var(--iron-960));
-  background-attachment: fixed;
+  background-color: var(--iron-0);
+  overflow-x: clip;
 }
 
-/* very fine iron grain, so flat dark areas aren't dead */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.4;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
+/* content sits above the field canvas (.nav is fixed and layered on its own) */
+main,
+.footer {
+  position: relative;
+  z-index: 1;
 }
 
 img,
@@ -106,8 +94,13 @@ a {
   text-decoration: none;
 }
 
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
 ::selection {
-  background: color-mix(in oklab, var(--ember) 32%, transparent);
+  background: color-mix(in oklab, var(--ember) 35%, transparent);
   color: var(--bone);
 }
 
@@ -117,22 +110,19 @@ a {
   border-radius: 4px;
 }
 
-/* Slim ember scrollbar */
 ::-webkit-scrollbar {
-  width: 11px;
-  height: 11px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--iron-0);
 }
 ::-webkit-scrollbar-thumb {
-  background-color: color-mix(in oklab, var(--ember) 34%, transparent);
-  border: 3px solid transparent;
-  background-clip: padding-box;
-  border-radius: 9px;
+  background-color: var(--iron-3);
+  border: 3px solid var(--iron-0);
+  border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in oklab, var(--ember) 55%, transparent);
+  background-color: var(--bone-faint);
 }
 
 /* ---- layout primitives ---- */
@@ -141,287 +131,126 @@ a {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
-  padding-inline: 24px;
-  position: relative;
-  z-index: 1;
-}
-
-main {
-  position: relative;
-  z-index: 1;
+  padding-inline: var(--pad);
 }
 
 .section {
-  padding-block: clamp(72px, 11vw, 140px);
-  position: relative;
-}
-
-.section--tight {
-  padding-block: clamp(56px, 8vw, 96px);
-}
-
-/* Hairline forge divider with a single ember heat point in the middle */
-.rule {
-  height: 1px;
-  border: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--border-strong) 22%,
-    color-mix(in oklab, var(--ember) 55%, transparent) 50%,
-    var(--border-strong) 78%,
-    transparent
-  );
+  padding-block: clamp(88px, 11vw, 150px);
 }
 
 /* ---- type ---- */
 
-.microlabel {
+.mono {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--bone-dim);
+  letter-spacing: 0.14em;
+  color: var(--bone-faint);
 }
 
-.microlabel--ember {
-  color: color-mix(in oklab, var(--ember-hot) 88%, var(--bone));
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.eyebrow::before {
-  content: "";
-  width: 22px;
-  height: 1px;
-  background: color-mix(in oklab, var(--ember) 70%, transparent);
+.mono--ember {
+  color: var(--ember);
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   color: var(--bone);
   text-wrap: balance;
 }
 
 .section-title {
-  font-size: clamp(1.9rem, 4vw, 3rem);
-  max-width: 20ch;
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  margin-top: 18px;
 }
 
 .lead {
   color: var(--bone-dim);
-  font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+  font-size: clamp(1rem, 1.4vw, 1.16rem);
   line-height: 1.65;
-  max-width: 60ch;
+  max-width: 58ch;
   text-wrap: pretty;
 }
 
-.ember-text {
-  background: linear-gradient(
-    100deg,
-    var(--ember-glow),
-    var(--ember-hot) 45%,
-    var(--ember) 75%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.accent {
+  color: var(--ember);
 }
 
-/* ---- buttons ---- */
+/* ---- buttons: flat pills ---- */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1;
-  padding: 14px 22px;
-  border-radius: 11px;
+  padding: 15px 26px;
+  border-radius: 999px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition:
-    transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.25s ease;
   white-space: nowrap;
+  transition:
+    transform 0.15s var(--ease-out),
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
 }
 .btn:active {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 .btn-ember {
-  position: relative;
   color: var(--ember-ink);
-  background: linear-gradient(180deg, var(--ember-hot), var(--ember));
-  box-shadow:
-    0 0 0 1px oklch(0.8 0.14 62 / 0.4) inset,
-    0 8px 26px -10px oklch(0.72 0.155 50 / 0.85),
-    0 1px 0 oklch(0.9 0.1 70 / 0.35) inset;
+  background: var(--ember);
 }
 .btn-ember:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 0 1px oklch(0.85 0.14 65 / 0.55) inset,
-    0 14px 40px -12px oklch(0.72 0.16 52 / 0.95),
-    0 0 34px -6px oklch(0.78 0.15 55 / 0.5);
+  background: color-mix(in oklab, var(--ember) 86%, white);
 }
 
 .btn-ghost {
   color: var(--bone);
-  background: color-mix(in oklab, var(--iron-820) 60%, transparent);
-  border-color: var(--border-strong);
-  backdrop-filter: blur(6px);
+  border-color: var(--line-strong);
+  background: color-mix(in oklab, var(--iron-1) 55%, transparent);
+  backdrop-filter: blur(8px);
 }
 .btn-ghost:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--ember) 50%, var(--border-strong));
-  background: color-mix(in oklab, var(--iron-780) 70%, transparent);
+  border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
 }
 
 .btn-sm {
-  padding: 10px 15px;
-  font-size: 0.86rem;
-  border-radius: 9px;
-}
-
-/* ---- chips / badges ---- */
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border-strong);
-  background: color-mix(in oklab, var(--iron-850) 70%, transparent);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: var(--bone-dim);
-  backdrop-filter: blur(6px);
-}
-.chip .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--ember-hot);
-  box-shadow: 0 0 10px 1px var(--ember-hot);
-  animation: pulse-dot 2.6s ease-in-out infinite;
-}
-
-/* ---- cards ---- */
-
-.card {
-  position: relative;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--iron-850) 92%, transparent),
-    color-mix(in oklab, var(--iron-900) 92%, transparent)
-  );
-  padding: 26px;
-  transition:
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.25s ease,
-    box-shadow 0.3s ease;
-  overflow: hidden;
-}
-/* ember hairline that warms up on hover */
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    145deg,
-    color-mix(in oklab, var(--ember) 45%, transparent),
-    transparent 40%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-.card:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-strong);
-  box-shadow: 0 24px 50px -28px oklch(0.05 0 0 / 0.9);
-}
-.card:hover::after {
-  opacity: 1;
+  padding: 10px 18px;
+  font-size: 0.85rem;
 }
 
 /* ---- scroll reveal ---- */
 
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(22px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
 }
 .reveal.is-in {
   opacity: 1;
   transform: none;
 }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
-  }
-}
-
-/* ---- animations ---- */
-
-@keyframes pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.55;
-    transform: scale(0.82);
-  }
-}
-
-@keyframes forge-breathe {
-  0%,
-  100% {
-    opacity: 0.72;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.06);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chip .dot,
-  [data-forge-glow] {
-    animation: none !important;
   }
 }

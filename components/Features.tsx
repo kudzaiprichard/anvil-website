@@ -1,63 +1,115 @@
+import CountUp from "./CountUp";
 import Reveal from "./Reveal";
 
-type Feature = {
-  k: string;
-  title: string;
-  body: string;
-};
+/* Bento grid — each capability gets a card with a small, honest visual. */
 
-const FEATURES: Feature[] = [
-  {
-    k: "Course",
-    title: "A guided course, not a problem dump",
-    body: "One mastery-gated climb — 8 stages, 19 units, 62 lessons. Each teaches one sub-pattern with an explainer, trigger signals, an interactive prediction diagram, and faded → independent practice.",
-  },
-  {
-    k: "Trainer",
-    title: "Pattern-recognition trainer",
-    body: "Prompt-only, unlabeled pattern-picker drills train which technique an unfamiliar problem needs — the skill that actually survives a whiteboard or AI-restricted interview.",
-  },
-  {
-    k: "Judge",
-    title: "Oracle-verified judging",
-    body: "2,900+ test packs with no hand-typed answer keys. Expected outputs are computed by executing reference solutions and cross-checking Python vs JavaScript vs a brute-force oracle.",
-  },
-  {
-    k: "Sandbox",
-    title: "Sandboxed local runner",
-    body: "Runs Python & JavaScript in an isolated subprocess with a per-run timeout, memory cap, and temp-dir isolation. Your code never executes in the WebView.",
-  },
-  {
-    k: "Offline",
-    title: "Honest by design",
-    body: "Fully offline — no account, no telemetry, no AI assistant to lean on. Take it on a plane; it just works. Everything lives on your own machine.",
-  },
-  {
-    k: "Review",
-    title: "FSRS spaced review",
-    body: "Solved problems return on an on-device spaced, interleaved schedule and are re-solved cold. Streaks with freezes — no XP, no leaderboards, no dark patterns.",
-  },
+const STATS = [
+  { value: "8", label: "stages" },
+  { value: "62", label: "lessons" },
+  { value: "2,900+", label: "verified test packs" },
+  { value: "2", label: "languages — Python & JS" },
 ];
 
 export default function Features() {
   return (
-    <section className="section" id="features">
+    <section className="section" id="inside">
       <div className="container">
-        <Reveal className="section-head">
-          <p className="eyebrow microlabel microlabel--ember">What&apos;s inside</p>
+        <Reveal>
+          <p className="mono mono--ember">What&apos;s inside</p>
           <h2 className="section-title">
-            Everything you need to master DSA — and nothing that trains you to cheat.
+            Everything you need.
+            <br />
+            Nothing that trains you to cheat.
           </h2>
         </Reveal>
 
-        <div className="feature-grid">
-          {FEATURES.map((f, i) => (
-            <Reveal key={f.k} className="card feature" delay={(i % 3) * 80}>
-              <span className="feature__k microlabel">{f.k}</span>
-              <h3 className="feature__title">{f.title}</h3>
-              <p className="feature__body">{f.body}</p>
-            </Reveal>
-          ))}
+        <div className="bento">
+          <Reveal className="bento__card bento__card--wide">
+            <span className="mono">Course</span>
+            <h3 className="bento__title">A mastery-gated climb, not a problem dump</h3>
+            <p className="bento__body">
+              8 stages, 19 units, 62 lessons — each teaches one sub-pattern with an
+              explainer, an animated diagram, and faded practice. Nothing unlocks
+              until you&apos;ve earned it.
+            </p>
+            <div className="viz viz-ladder" aria-hidden>
+              {[0.1, 0.22, 0.34, 0.46, 0.58, 0.7, 0.84, 1].map((h, i) => (
+                <span
+                  key={i}
+                  className={i < 5 ? "on" : ""}
+                  style={{ "--h": h } as React.CSSProperties}
+                />
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card" delay={80}>
+            <span className="mono">Judge</span>
+            <h3 className="bento__title">Oracle-verified judging</h3>
+            <p className="bento__body">
+              No hand-typed answer keys — reference solutions are cross-checked
+              against an independent brute-force oracle.
+            </p>
+            <div className="viz viz-checks" aria-hidden>
+              <span><i>✓</i>python reference</span>
+              <span><i>✓</i>javascript reference</span>
+              <span><i>✓</i>brute-force oracle</span>
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card">
+            <span className="mono">Sandbox</span>
+            <h3 className="bento__title">Isolated local runner</h3>
+            <p className="bento__body">
+              Your code runs in a subprocess with timeouts, memory caps, and
+              temp-dir isolation — never in the WebView.
+            </p>
+            <div className="viz" aria-hidden>
+              <div className="viz-term">
+                <i>$</i> run --timeout 2s --mem 256mb
+                <span className="hero__caret" />
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card" delay={80}>
+            <span className="mono">Trainer</span>
+            <h3 className="bento__title">Pattern-recognition drills</h3>
+            <p className="bento__body">
+              Unlabeled prompts train which technique an unseen problem needs —
+              the skill that survives a whiteboard.
+            </p>
+            <div className="viz viz-chips" aria-hidden>
+              <span>sliding window?</span>
+              <span className="on">two pointers?</span>
+              <span>BFS?</span>
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card" delay={160}>
+            <span className="mono">Review</span>
+            <h3 className="bento__title">FSRS spaced review</h3>
+            <p className="bento__body">
+              Solved problems return on an on-device spaced, interleaved schedule
+              and get re-solved cold. Streaks come with freezes — no guilt.
+            </p>
+            <div className="viz viz-dots" aria-hidden>
+              {["on", "on", "half", "on", "", "on", "half", "", "on", ""].map((c, i) => (
+                <span key={i} className={c} />
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal className="bento__card bento__card--stats">
+            {STATS.map((s) => (
+              <span className="stat" key={s.label}>
+                <span className="stat__value">
+                  <CountUp value={s.value} />
+                </span>
+                <span className="stat__label mono">{s.label}</span>
+              </span>
+            ))}
+          </Reveal>
         </div>
       </div>
     </section>

@@ -1,7 +1,9 @@
-import EmberField from "@/components/EmberField";
+import FieldCanvas from "@/components/FieldCanvas";
+import Instruments from "@/components/Instruments";
+import Marquee from "@/components/Marquee";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
-import Thesis from "@/components/Thesis";
+import Manifesto from "@/components/Manifesto";
 import Features from "@/components/Features";
 import OpenSource from "@/components/OpenSource";
 import Download from "@/components/Download";
@@ -10,11 +12,13 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <>
-      <EmberField />
+      <FieldCanvas />
+      <Instruments />
+      <Marquee />
       <Nav />
       <main>
         <Hero />
-        <Thesis />
+        <Manifesto />
         <Features />
         <OpenSource />
         <Download />

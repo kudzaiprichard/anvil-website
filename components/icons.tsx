@@ -2,8 +2,8 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-/* The Anvil mark — the bone anvil glyph from the app icon, drawn in
-   currentColor so it can be tinted (bone on the tile, ember on hover). */
+/* The Anvil mark — the anvil glyph from the app icon, drawn in
+   currentColor so it can be tinted (ember in the nav, bone elsewhere). */
 export function AnvilMark({ title, ...props }: IconProps & { title?: string }) {
   return (
     <svg viewBox="0 0 25 26" fill="currentColor" aria-hidden={title ? undefined : true} {...props}>
@@ -11,64 +11,6 @@ export function AnvilMark({ title, ...props }: IconProps & { title?: string }) {
       <path d="M3.2 5.6h15.2c1.8 0 3.3 1 4.4 2.1.4.4.1 1.1-.5 1.1h-4.1v1.1c0 .7.4 1.3 1 1.6l.9.4c.5.2.5 1 0 1.2-2.3.9-4.8 1-7.1.3-1.6-.5-3.3-.5-4.9 0-1.1.3-2.3.5-3.4.5-.6 0-.9-.7-.5-1.1l1.5-1.4c.5-.5.8-1.1.8-1.8v-.8H3.2c-.6 0-1-.4-1-1V6.6c0-.6.4-1 1-1z" />
       <path d="M9.4 14.9h5.2l1 2.3H8.4z" />
       <path d="M6.5 18.2h11c.6 0 1 .4 1 1v.6c0 .6-.4 1-1 1h-11c-.6 0-1-.4-1-1v-.6c0-.6.4-1 1-1z" />
-    </svg>
-  );
-}
-
-/* The full app icon tile — ember gradient with the bone anvil, for the hero. */
-export function AnvilTile(props: IconProps) {
-  return (
-    <svg viewBox="0 0 1024 1024" {...props}>
-      <defs>
-        <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#F4924B" />
-          <stop offset="0.42" stopColor="#D6621F" />
-          <stop offset="1" stopColor="#A83E10" />
-        </linearGradient>
-        <radialGradient id="glow" cx="0.5" cy="0.42" r="0.62">
-          <stop offset="0" stopColor="#FFB871" stopOpacity="0.85" />
-          <stop offset="0.55" stopColor="#FFB871" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="0.30" />
-          <stop offset="0.14" stopColor="#ffffff" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset="1" stopColor="#F1EADE" />
-        </linearGradient>
-        <clipPath id="tileClip">
-          <rect x="100" y="100" width="824" height="824" rx="184.988" ry="184.988" />
-        </clipPath>
-      </defs>
-      <g clipPath="url(#tileClip)">
-        <rect x="100" y="100" width="824" height="824" fill="url(#tile)" />
-        <rect x="100" y="100" width="824" height="824" fill="url(#glow)" />
-        <rect x="100" y="100" width="824" height="824" fill="url(#sheen)" />
-        <g transform="translate(512 522) scale(24) translate(-12.5 -13.2)">
-          <path
-            d="M3.2 5.6h15.2c1.8 0 3.3 1 4.4 2.1.4.4.1 1.1-.5 1.1h-4.1v1.1c0 .7.4 1.3 1 1.6l.9.4c.5.2.5 1 0 1.2-2.3.9-4.8 1-7.1.3-1.6-.5-3.3-.5-4.9 0-1.1.3-2.3.5-3.4.5-.6 0-.9-.7-.5-1.1l1.5-1.4c.5-.5.8-1.1.8-1.8v-.8H3.2c-.6 0-1-.4-1-1V6.6c0-.6.4-1 1-1z"
-            fill="url(#bone)"
-          />
-          <path d="M9.4 14.9h5.2l1 2.3H8.4z" fill="url(#bone)" />
-          <path
-            d="M6.5 18.2h11c.6 0 1 .4 1 1v.6c0 .6-.4 1-1 1h-11c-.6 0-1-.4-1-1v-.6c0-.6.4-1 1-1z"
-            fill="url(#bone)"
-          />
-        </g>
-      </g>
-      <rect
-        x="100.75"
-        y="100.75"
-        width="822.5"
-        height="822.5"
-        rx="184.988"
-        ry="184.988"
-        fill="none"
-        stroke="#ffffff"
-        strokeOpacity="0.16"
-        strokeWidth="1.5"
-      />
     </svg>
   );
 }
@@ -117,14 +59,6 @@ export function ArrowIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
       <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
-}
-
-export function CheckIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
-      <path d="M20 6 9 17l-5-5" />
     </svg>
   );
 }

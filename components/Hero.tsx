@@ -1,61 +1,78 @@
-import { AnvilTile, ArrowIcon, DownloadIcon, GitHubIcon } from "./icons";
-import { REPO_URL, VERSION } from "@/lib/releases";
+import AppFrame from "./AppFrame";
+import CountUp from "./CountUp";
+import TypeCycle from "./TypeCycle";
+import { ArrowIcon, DownloadIcon, GitHubIcon } from "./icons";
+import { LATEST_RELEASE_URL, REPO_URL, VERSION } from "@/lib/releases";
 
 const STATS = [
-  { value: "2,900+", label: "Verified test packs" },
-  { value: "62", label: "Guided lessons" },
-  { value: "0", label: "Accounts · network · AI" },
+  { value: "62", label: "guided lessons" },
+  { value: "2,900+", label: "test packs" },
+  { value: "0", label: "accounts · telemetry · AI" },
 ];
 
 export default function Hero() {
   return (
     <section className="hero" id="top">
-      {/* The forge: a breathing heat-glow behind the app tile */}
-      <div className="forge" aria-hidden>
-        <div className="forge__glow" data-forge-glow />
-        <div className="forge__tile">
-          <AnvilTile className="forge__icon" />
-        </div>
-      </div>
-
-      <div className="container hero__inner">
-        <p className="eyebrow microlabel microlabel--ember hero__eyebrow">
-          Open source · Offline-first · MIT
-        </p>
+      <div className="container">
+        <a
+          className="hero__badge mono fade-in"
+          href={LATEST_RELEASE_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="dot" aria-hidden />
+          v{VERSION} · free &amp; open source
+        </a>
 
         <h1 className="hero__title">
-          Forge the pattern recognition
-          <br className="hero__br" /> that{" "}
-          <span className="ember-text">survives the interview.</span>
+          <span className="fade-in" style={{ "--rise-delay": "100ms" } as React.CSSProperties}>
+            Master <TypeCycle />
+          </span>
+          <br />
+          <span className="fade-in" style={{ "--rise-delay": "220ms" } as React.CSSProperties}>
+            on your machine.
+          </span>
         </h1>
 
-        <p className="lead hero__lead">
-          Anvil is a free, open-source desktop app for DSA practice — a guided course of{" "}
-          <strong>original</strong> problems you learn with animated diagrams, then solve against real
-          test cases in a sandbox on your own machine. Fully offline. No account. No AI crutch.
+        <p
+          className="lead hero__lead fade-in"
+          style={{ "--rise-delay": "380ms" } as React.CSSProperties}
+        >
+          Anvil is a desktop app that teaches you algorithm patterns, then judges
+          your code against real test cases — fully offline. No account. No
+          network. No AI crutch.
         </p>
 
-        <div className="hero__cta">
+        <div
+          className="hero__cta fade-in"
+          style={{ "--rise-delay": "500ms" } as React.CSSProperties}
+        >
           <a className="btn btn-ember" href="#download">
-            <DownloadIcon width={18} height={18} />
+            <DownloadIcon width={17} height={17} />
             Download Anvil
-            <span className="hero__ver">v{VERSION}</span>
           </a>
           <a className="btn btn-ghost" href={REPO_URL} target="_blank" rel="noreferrer">
-            <GitHubIcon width={17} height={17} />
-            View source
-            <ArrowIcon width={16} height={16} />
+            <GitHubIcon width={16} height={16} />
+            Star on GitHub
+            <ArrowIcon width={15} height={15} />
           </a>
         </div>
 
-        <dl className="hero__stats">
+        <p
+          className="hero__stats fade-in"
+          style={{ "--rise-delay": "620ms" } as React.CSSProperties}
+        >
           {STATS.map((s) => (
-            <div className="hero__stat" key={s.label}>
-              <dt className="hero__stat-value ember-text">{s.value}</dt>
-              <dd className="hero__stat-label microlabel">{s.label}</dd>
-            </div>
+            <span className="hero__stat" key={s.label}>
+              <b>
+                <CountUp value={s.value} />
+              </b>
+              <span className="mono">{s.label}</span>
+            </span>
           ))}
-        </dl>
+        </p>
+
+        <AppFrame />
       </div>
     </section>
   );
