@@ -24,8 +24,9 @@ version and file sizes.
 
 Highlights:
 
-- **Living background** — a full-page flow-field canvas of bone-and-ember particle streaks that
-  drifts with time, shifts on scroll, and bends away from the cursor.
+- **Living background** — woven iron silk: a sheet of hairline wires undulating in slow motion,
+  with ember signal pulses (comet head, fading tail) traveling along them at their own speeds.
+  The sheet lifts around the cursor with ease-back, and scrolling agitates the weave.
 - **The product demoing itself** — a typed headline cycling DSA patterns, and a faux Anvil window
   that materializes a solution line by line, then runs its test packs to green on loop.
 - **Iron & ember theme** — warm charcoal neutrals under one flat ember-copper accent, lifted from
