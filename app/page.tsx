@@ -1,4 +1,4 @@
-import FieldCanvas from "@/components/FieldCanvas";
+import TopoField from "@/components/TopoField";
 import Instruments from "@/components/Instruments";
 import Marquee from "@/components/Marquee";
 import Nav from "@/components/Nav";
@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <>
-      <FieldCanvas />
+      <TopoField />
       <Instruments />
       <Marquee />
       <Nav />
