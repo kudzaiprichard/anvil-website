@@ -48,12 +48,13 @@ npm run build      # production build
 npm start          # serve the production build
 ```
 
-## Updating the release links
+## Release links & versions
 
-Release data lives in [`lib/releases.ts`](./lib/releases.ts). When a new Anvil version ships, bump
-`VERSION`, `RELEASE_DATE`, and the asset filenames/sizes to match the new
-[release](https://github.com/kudzaiprichard/anvil-releases/releases); every download URL derives from
-those values.
+Every version, date, file size, and download URL on the site is fetched live from the latest
+[anvil-releases](https://github.com/kudzaiprichard/anvil-releases/releases) release via the GitHub
+API ([`lib/releases.ts`](./lib/releases.ts)), revalidated hourly — publishing a new release updates
+the site automatically. If the API is unreachable, a pinned fallback release is served; when asset
+naming changes, update `ASSET_RULES` (and the fallback) in the same file.
 
 ## Contributing
 

@@ -1,5 +1,5 @@
 import { AnvilMark, GitHubIcon } from "./icons";
-import { REPO_URL, RELEASES_URL, VERSION } from "@/lib/releases";
+import { REPO_URL, RELEASES_URL } from "@/lib/releases";
 
 const COLS = [
   {
@@ -31,7 +31,7 @@ const COLS = [
   },
 ];
 
-export default function Footer() {
+export default function Footer({ version }: { version: string }) {
   return (
     <footer className="footer">
       <div className="container footer__inner">
@@ -79,7 +79,7 @@ export default function Footer() {
 
       <div className="container footer__base">
         <span className="mono">© {new Date().getFullYear()} Kudzai P Matizirofa · MIT</span>
-        <span className="mono">Anvil v{VERSION}</span>
+        <span className="mono">Anvil v{version}</span>
       </div>
 
       <span className="footer__mark" aria-hidden>

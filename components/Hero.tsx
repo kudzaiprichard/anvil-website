@@ -2,7 +2,7 @@ import AppFrame from "./AppFrame";
 import CountUp from "./CountUp";
 import TypeCycle from "./TypeCycle";
 import { ArrowIcon, DownloadIcon, GitHubIcon } from "./icons";
-import { LATEST_RELEASE_URL, REPO_URL, VERSION } from "@/lib/releases";
+import { REPO_URL } from "@/lib/releases";
 
 const STATS = [
   { value: "62", label: "guided lessons" },
@@ -10,18 +10,24 @@ const STATS = [
   { value: "0", label: "accounts · telemetry · AI" },
 ];
 
-export default function Hero() {
+export default function Hero({
+  version,
+  releaseUrl,
+}: {
+  version: string;
+  releaseUrl: string;
+}) {
   return (
     <section className="hero" id="top">
       <div className="container">
         <a
           className="hero__badge mono fade-in"
-          href={LATEST_RELEASE_URL}
+          href={releaseUrl}
           target="_blank"
           rel="noreferrer"
         >
           <span className="dot" aria-hidden />
-          v{VERSION} · free &amp; open source
+          v{version} · free &amp; open source
         </a>
 
         <h1 className="hero__title">

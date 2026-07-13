@@ -3,14 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Reveal from "./Reveal";
 import { AppleIcon, ArrowIcon, DownloadIcon, LinuxIcon, WindowsIcon } from "./icons";
-import {
-  PLATFORMS,
-  VERSION,
-  RELEASE_DATE,
-  RELEASES_URL,
-  LATEST_RELEASE_URL,
-  type Platform,
-} from "@/lib/releases";
+import { RELEASES_URL, type Platform, type Release } from "@/lib/releases";
 
 const OS_ICON = {
   macos: AppleIcon,
@@ -27,7 +20,15 @@ function detectOS(): Platform["id"] | null {
   return null;
 }
 
-function PlatformCard({ p, isCurrent }: { p: Platform; isCurrent: boolean }) {
+function PlatformCard({
+  p,
+  version,
+  isCurrent,
+}: {
+  p: Platform;
+  version: string;
+  isCurrent: boolean;
+}) {
   const Icon = OS_ICON[p.id];
   return (
     <div className={`dl-card ${isCurrent ? "dl-card--current" : ""}`}>
@@ -51,6 +52,7 @@ function PlatformCard({ p, isCurrent }: { p: Platform; isCurrent: boolean }) {
               className={`dl-btn ${a.primary ? "dl-btn--primary" : ""}`}
               href={a.url}
               download
+              title={`${a.file} · v${version}`}
             >
               <span className="dl-btn__main">
                 <span className="dl-btn__label">{a.label}</span>
@@ -68,14 +70,16 @@ function PlatformCard({ p, isCurrent }: { p: Platform; isCurrent: boolean }) {
   );
 }
 
-export default function Download() {
+export default function Download({ release }: { release: Release }) {
   const [os, setOs] = useState<Platform["id"] | null>(null);
   useEffect(() => setOs(detectOS()), []);
 
   const ordered = useMemo(() => {
-    if (!os) return PLATFORMS;
-    return [...PLATFORMS].sort((a, b) => (a.id === os ? -1 : b.id === os ? 1 : 0));
-  }, [os]);
+    if (!os) return release.platforms;
+    return [...release.platforms].sort((a, b) =>
+      a.id === os ? -1 : b.id === os ? 1 : 0,
+    );
+  }, [os, release.platforms]);
 
   return (
     <section className="section" id="download">
@@ -85,11 +89,11 @@ export default function Download() {
           <h2 className="section-title">Get Anvil for your machine.</h2>
           <div className="dl-release">
             <span className="mono">
-              Latest v{VERSION} · Released {RELEASE_DATE}
+              Latest v{release.version} · Released {release.date}
             </span>
             <a
               className="dl-release__link mono mono--ember"
-              href={LATEST_RELEASE_URL}
+              href={release.url}
               target="_blank"
               rel="noreferrer"
             >
@@ -102,7 +106,7 @@ export default function Download() {
         <div className="dl-grid">
           {ordered.map((p, i) => (
             <Reveal key={p.id} delay={i * 90}>
-              <PlatformCard p={p} isCurrent={p.id === os} />
+              <PlatformCard p={p} version={release.version} isCurrent={p.id === os} />
             </Reveal>
           ))}
         </div>
