@@ -24,8 +24,9 @@ version and file sizes.
 
 Highlights:
 
-- **Living background** — a full-page flow-field canvas of bone-and-ember particle streaks that
-  drifts with time, shifts on scroll, and bends away from the cursor.
+- **Living background** — a reactive dot lattice: a machined grid of bone studs with a slow
+  luminance wave breathing across it. Dots swell, warm to ember, and part around the cursor with
+  ease-back; scrolling energizes the wave and slides the lattice. A few permanent ember studs.
 - **The product demoing itself** — a typed headline cycling DSA patterns, and a faux Anvil window
   that materializes a solution line by line, then runs its test packs to green on loop.
 - **Iron & ember theme** — warm charcoal neutrals under one flat ember-copper accent, lifted from
