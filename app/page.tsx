@@ -1,4 +1,4 @@
-import FieldCanvas from "@/components/FieldCanvas";
+import ForgeField from "@/components/ForgeField";
 import Instruments from "@/components/Instruments";
 import Marquee from "@/components/Marquee";
 import Nav from "@/components/Nav";
@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <>
-      <FieldCanvas />
+      <ForgeField />
       <Instruments />
       <Marquee />
       <Nav />
