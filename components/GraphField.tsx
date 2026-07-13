@@ -72,15 +72,25 @@ export default function GraphField() {
       return (y < 0 ? y + spanY() : y) - margin;
     };
 
-    let mx = -9999;
-    let my = -9999;
+    // smoothed cursor: edges glide toward the pointer and ease back
+    let tx = -9999;
+    let ty = -9999;
+    let sx = 0;
+    let sy = 0;
+    let grip = 0;
+    let hasCursor = false;
     const onMove = (e: PointerEvent) => {
-      mx = e.clientX;
-      my = e.clientY;
+      if (!hasCursor) {
+        sx = e.clientX;
+        sy = e.clientY;
+        hasCursor = true;
+      }
+      tx = e.clientX;
+      ty = e.clientY;
     };
     const onLeave = () => {
-      mx = -9999;
-      my = -9999;
+      tx = -9999;
+      ty = -9999;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerout", onLeave);
@@ -151,19 +161,19 @@ export default function GraphField() {
       }
 
       // cursor reaches into the graph
-      if (mx > -999) {
+      if (grip > 0.01) {
         for (const n of nodes) {
           const y = posY(n, scroll);
-          const dx = n.x - mx;
-          const dy = y - my;
+          const dx = n.x - sx;
+          const dy = y - sy;
           const d2 = dx * dx + dy * dy;
           if (d2 > CURSOR_D * CURSOR_D) continue;
           const near = 1 - Math.sqrt(d2) / CURSOR_D;
-          ctx.strokeStyle = col(EMBER, near * 0.3);
+          ctx.strokeStyle = col(EMBER, near * 0.3 * grip);
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(n.x, y);
-          ctx.lineTo(mx, my);
+          ctx.lineTo(sx, sy);
           ctx.stroke();
         }
       }
@@ -202,6 +212,13 @@ export default function GraphField() {
         n.y += n.vy;
         if (n.x < -margin) n.x = w + margin;
         if (n.x > w + margin) n.x = -margin;
+      }
+
+      const present = tx > -9999;
+      grip += ((present ? 1 : 0) - grip) * 0.08;
+      if (present) {
+        sx += (tx - sx) * 0.1;
+        sy += (ty - sy) * 0.1;
       }
 
       if (now >= nextPulseAt) launchPulse(now, window.scrollY);
