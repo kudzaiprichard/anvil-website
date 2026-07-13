@@ -24,75 +24,91 @@
   pointer-events: none;
 }
 
-/* ---- floating pill nav ---- */
+/* ---- nav: full-width bar that sticks after the top ticker scrolls away ---- */
 
 .nav {
-  position: fixed;
-  top: 18px;
-  left: 0;
-  right: 0;
+  position: sticky;
+  top: 0;
   z-index: 50;
-  display: flex;
-  justify-content: center;
-  padding-inline: 16px;
-  animation: nav-drop 0.7s var(--ease-out) both;
+  border-bottom: 1px solid transparent;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
 }
-@keyframes nav-drop {
-  from {
-    opacity: 0;
-    transform: translateY(-16px);
-  }
+.nav--scrolled {
+  background: color-mix(in oklab, var(--iron-0) 86%, transparent);
+  backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom-color: var(--line);
 }
 
-.nav__pill {
+.nav__inner {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: color-mix(in oklab, var(--iron-0) 78%, transparent);
-  backdrop-filter: blur(14px) saturate(1.15);
-  transition: border-color 0.25s ease;
-}
-.nav--scrolled .nav__pill {
-  border-color: color-mix(in oklab, var(--ember) 30%, var(--line-strong));
+  justify-content: space-between;
+  gap: 20px;
+  height: 62px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 8px 14px 8px 10px;
-  border-radius: 999px;
+  gap: 10px;
 }
 .brand__mark {
-  width: 21px;
-  height: 21px;
+  width: 22px;
+  height: 22px;
   color: var(--ember);
 }
 .brand__word {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.05rem;
   letter-spacing: -0.02em;
+}
+.brand__ver {
+  margin-left: 2px;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+@media (max-width: 460px) {
+  .brand__ver {
+    display: none;
+  }
 }
 
 .nav__links {
   display: flex;
   align-items: center;
+  gap: 30px;
 }
 .nav__links a {
-  padding: 9px 14px;
-  border-radius: 999px;
-  font-size: 0.88rem;
+  position: relative;
+  padding: 6px 1px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
   color: var(--bone-dim);
-  transition:
-    color 0.15s ease,
-    background 0.15s ease;
+  transition: color 0.18s ease;
+}
+.nav__links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--ember);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s var(--ease-out);
 }
 .nav__links a:hover {
   color: var(--bone);
-  background: var(--iron-2);
+}
+.nav__links a:hover::after {
+  transform: scaleX(1);
 }
 @media (max-width: 720px) {
   .nav__links {
@@ -100,18 +116,16 @@
   }
 }
 
-.nav__sep {
-  width: 1px;
-  height: 22px;
-  background: var(--line-strong);
-  margin-inline: 6px;
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
-
 .nav__gh {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   color: var(--bone-dim);
   transition:
@@ -126,7 +140,7 @@
 /* ---- hero ---- */
 
 .hero {
-  padding-top: clamp(150px, 20vh, 220px);
+  padding-top: clamp(90px, 13vh, 150px);
   text-align: center;
 }
 
@@ -395,12 +409,15 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- pattern marquee ---- */
+/* ---- pattern ticker (very top of the page, scrolls away) ---- */
 
 .marquee {
+  position: relative;
+  z-index: 1;
   overflow: hidden;
-  border-block: 1px solid var(--line);
-  padding-block: 20px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--iron-1) 55%, transparent);
+  padding-block: 11px;
   user-select: none;
 }
 .marquee__track {

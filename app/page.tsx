@@ -1,8 +1,8 @@
 import FieldCanvas from "@/components/FieldCanvas";
 import Instruments from "@/components/Instruments";
+import Marquee from "@/components/Marquee";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
-import Marquee from "@/components/Marquee";
 import Manifesto from "@/components/Manifesto";
 import Features from "@/components/Features";
 import OpenSource from "@/components/OpenSource";
@@ -14,10 +14,10 @@ export default function Home() {
     <>
       <FieldCanvas />
       <Instruments />
+      <Marquee />
       <Nav />
       <main>
         <Hero />
-        <Marquee />
         <Manifesto />
         <Features />
         <OpenSource />
