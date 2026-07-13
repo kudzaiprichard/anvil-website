@@ -154,18 +154,11 @@ export default function SilkField() {
 
     let raf = 0;
     let t = 0;
-    let lastScroll = window.scrollY;
-    let vel = 0;
     const tick = () => {
       raf = requestAnimationFrame(tick);
       if (document.hidden) return;
 
-      const sc = window.scrollY;
-      vel = vel * 0.86 + (sc - lastScroll) * 0.14;
-      lastScroll = sc;
-      const energy = Math.min(Math.abs(vel) / 40, 1);
-
-      t += 0.0075 + energy * 0.006;
+      t += 0.0075;
 
       const present = tx >= 0;
       grip += ((present ? 1 : 0) - grip) * 0.08;
@@ -174,7 +167,8 @@ export default function SilkField() {
         sy += (ty - sy) * 0.1;
       }
 
-      draw(t, sc, energy);
+      // scroll deliberately leaves the weave alone
+      draw(t, 0, 0);
     };
     raf = requestAnimationFrame(tick);
 

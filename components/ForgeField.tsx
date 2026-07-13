@@ -220,7 +220,8 @@ export default function ForgeField() {
       window.removeEventListener("pointerout", onLeave);
       canvas.removeEventListener("webglcontextlost", onLost);
       canvas.removeEventListener("webglcontextrestored", onRestored);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      // no manual loseContext(): a remount reuses this canvas's context, and
+      // killing it here would leave the next mount with a dead context
     };
   }, []);
 
