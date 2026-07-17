@@ -20,7 +20,8 @@
   /* bone text */
   --bone: oklch(0.935 0.006 82);
   --bone-dim: oklch(0.69 0.012 72);
-  --bone-faint: oklch(0.47 0.012 68);
+  /* ≥4.5:1 on every iron surface so small mono labels stay WCAG-readable */
+  --bone-faint: oklch(0.6 0.012 68);
 
   /* ember-copper accent — flat, no gradients */
   --ember: oklch(0.72 0.155 50);

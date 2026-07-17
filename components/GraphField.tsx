@@ -55,7 +55,14 @@ export default function GraphField() {
     resize();
     window.addEventListener("resize", resize);
 
-    const nodes: Node[] = Array.from({ length: COUNT }, () => ({
+    // phone-sized viewports get a proportionally smaller graph
+    const density = Math.min(
+      1,
+      Math.max(0.45, (window.innerWidth * window.innerHeight) / (1440 * 900)),
+    );
+    const count = Math.round(COUNT * density);
+
+    const nodes: Node[] = Array.from({ length: count }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       vx: (Math.random() - 0.5) * 0.24,
@@ -100,14 +107,14 @@ export default function GraphField() {
     let nextPulseAt = performance.now() + 1200;
     const launchPulse = (now: number, scroll: number) => {
       const ys = nodes.map((n) => posY(n, scroll));
-      const hops = new Array<number>(COUNT).fill(-1);
-      const start = Math.floor(Math.random() * COUNT);
+      const hops = new Array<number>(count).fill(-1);
+      const start = Math.floor(Math.random() * count);
       hops[start] = 0;
       const queue = [start];
       let maxHop = 0;
       while (queue.length) {
         const i = queue.shift()!;
-        for (let j = 0; j < COUNT; j++) {
+        for (let j = 0; j < count; j++) {
           if (hops[j] !== -1) continue;
           const dx = nodes[i].x - nodes[j].x;
           const dy = ys[i] - ys[j];
@@ -138,9 +145,9 @@ export default function GraphField() {
       ctx.clearRect(0, 0, w, h);
 
       // edges
-      for (let i = 0; i < COUNT; i++) {
+      for (let i = 0; i < count; i++) {
         const yi = posY(nodes[i], scroll);
-        for (let j = i + 1; j < COUNT; j++) {
+        for (let j = i + 1; j < count; j++) {
           const yj = posY(nodes[j], scroll);
           const dx = nodes[i].x - nodes[j].x;
           const dy = yi - yj;

@@ -124,7 +124,12 @@ export default function FieldCanvas() {
     const va: Vec = { x: 0, y: 0 };
     const vb: Vec = { x: 0, y: 0 };
 
-    const parts: P[] = Array.from({ length: COUNT }, () => ({
+    // phone-sized viewports get a proportionally thinner field
+    const density = Math.min(
+      1,
+      Math.max(0.35, (window.innerWidth * window.innerHeight) / (1440 * 900)),
+    );
+    const parts: P[] = Array.from({ length: Math.round(COUNT * density) }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       vx: 0,

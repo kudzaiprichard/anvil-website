@@ -19,7 +19,7 @@ export default async function Home() {
       <Instruments />
       <Marquee />
       <Nav version={release.version} />
-      <main>
+      <main id="main">
         <Hero version={release.version} releaseUrl={release.url} />
         <Manifesto />
         <Features />

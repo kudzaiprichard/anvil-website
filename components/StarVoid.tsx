@@ -77,6 +77,12 @@ export default function StarVoid({ intensity = 1 }: { intensity?: number }) {
 
     const boost = 0.7 + 0.3 * intensity; // gentler ramp for alphas
 
+    // phone-sized viewports get a proportionally thinner sky
+    const density = Math.min(
+      1,
+      Math.max(0.4, (window.innerWidth * window.innerHeight) / (1440 * 900)),
+    );
+
     let w = 0;
     let h = 0;
     let dpr = 1;
@@ -84,7 +90,7 @@ export default function StarVoid({ intensity = 1 }: { intensity?: number }) {
 
     /* stable normalized star positions so resize keeps the same sky */
     const layerStars = LAYERS.map((l) =>
-      Array.from({ length: Math.round(l.count * intensity) }, () => ({
+      Array.from({ length: Math.round(l.count * intensity * density) }, () => ({
         x: Math.random(),
         y: Math.random(),
         size: skew(2.6), // radius factor, heavily small-skewed
@@ -179,7 +185,7 @@ export default function StarVoid({ intensity = 1 }: { intensity?: number }) {
     window.addEventListener("resize", resize);
 
     const bright: Bright[] = Array.from(
-      { length: Math.round(BRIGHT_COUNT * intensity) },
+      { length: Math.round(BRIGHT_COUNT * intensity * density) },
       () => {
         const size = skew(2.4);
         return {

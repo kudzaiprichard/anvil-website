@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import SiteLoader from "@/components/SiteLoader";
 import {
   AUTHOR_NAME,
   GITHUB_URL,
@@ -125,6 +126,10 @@ export default function RootLayout({
       className={`${archivo.variable} ${plexMono.variable}`}
     >
       <body>
+        <a className="skip-link" href="#main">
+          Skip to content
+        </a>
+        <SiteLoader />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
