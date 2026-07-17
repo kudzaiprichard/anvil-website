@@ -1,7 +1,11 @@
 import CountUp from "./CountUp";
 import Reveal from "./Reveal";
 
-/* Bento grid — each capability gets a card with a small, honest visual. */
+/*
+ * Sticky split: the section header and the numbers hold the left column
+ * while the capability cards scroll past on the right in a staggered
+ * two-column rhythm. Each card keeps its small, honest visual.
+ */
 
 const STATS = [
   { value: "8", label: "stages" },
@@ -13,17 +17,29 @@ const STATS = [
 export default function Features() {
   return (
     <section className="section" id="inside">
-      <div className="container">
-        <Reveal>
-          <p className="mono mono--ember">What&apos;s inside</p>
-          <h2 className="section-title">
-            Everything you need.
-            <br />
-            Nothing that trains you to cheat.
-          </h2>
-        </Reveal>
+      <div className="container container--wide inside">
+        <div className="inside__head">
+          <Reveal>
+            <p className="mono mono--ember">What&apos;s inside</p>
+            <h2 className="section-title">
+              Everything you need.
+              <br />
+              Nothing that trains you to cheat.
+            </h2>
+          </Reveal>
+          <Reveal className="inside__stats" delay={100}>
+            {STATS.map((s) => (
+              <span className="inside__stat" key={s.label}>
+                <span className="inside__stat-value">
+                  <CountUp value={s.value} />
+                </span>
+                <span className="mono">{s.label}</span>
+              </span>
+            ))}
+          </Reveal>
+        </div>
 
-        <div className="bento">
+        <div className="bento bento--split">
           <Reveal className="bento__card bento__card--wide">
             <span className="mono">Course</span>
             <h3 className="bento__title">A mastery-gated climb, not a problem dump</h3>
@@ -98,17 +114,6 @@ export default function Features() {
                 <span key={i} className={c} />
               ))}
             </div>
-          </Reveal>
-
-          <Reveal className="bento__card bento__card--stats">
-            {STATS.map((s) => (
-              <span className="stat" key={s.label}>
-                <span className="stat__value">
-                  <CountUp value={s.value} />
-                </span>
-                <span className="stat__label mono">{s.label}</span>
-              </span>
-            ))}
           </Reveal>
         </div>
       </div>

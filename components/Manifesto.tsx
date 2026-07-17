@@ -67,14 +67,19 @@ export default function Manifesto() {
   return (
     <section className="section" id="why">
       <div className="container manifesto">
-        <p className="mono mono--ember">Why Anvil</p>
-        <p className="manifesto__text" ref={ref}>
-          {WORDS.map(({ word, ember }, i) => (
-            <span key={i} className={`w ${ember ? "w--ember" : ""}`}>
-              {word}{" "}
-            </span>
-          ))}
-        </p>
+        <span className="manifesto__side mono" aria-hidden>
+          Station 02 · The argument
+        </span>
+        <div className="manifesto__body">
+          <p className="mono mono--ember">Why Anvil</p>
+          <p className="manifesto__text" ref={ref}>
+            {WORDS.map(({ word, ember }, i) => (
+              <span key={i} className={`w ${ember ? "w--ember" : ""}`}>
+                {word}{" "}
+              </span>
+            ))}
+          </p>
+        </div>
       </div>
     </section>
   );

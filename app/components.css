@@ -322,6 +322,63 @@
   margin-top: 36px;
 }
 
+/* ---- station rail (left-edge section instrument, desktop only) ---- */
+
+.rail {
+  position: fixed;
+  left: 22px;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+}
+@media (min-width: 1400px) {
+  .rail {
+    display: flex;
+  }
+}
+.rail__stop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bone-faint);
+  transition: color 0.2s ease;
+}
+.rail__stop .mono {
+  color: inherit;
+  font-size: 10px;
+}
+.rail__tick {
+  width: 18px;
+  height: 1px;
+  background: var(--line-strong);
+  transition:
+    background 0.2s ease,
+    width 0.25s var(--ease-out);
+}
+.rail__label {
+  opacity: 0;
+  translate: -4px 0;
+  transition:
+    opacity 0.2s ease,
+    translate 0.2s var(--ease-out);
+}
+.rail__stop:hover,
+.rail__stop.is-active {
+  color: var(--ember);
+}
+.rail__stop:hover .rail__label,
+.rail__stop.is-active .rail__label {
+  opacity: 1;
+  translate: 0 0;
+}
+.rail__stop.is-active .rail__tick {
+  width: 32px;
+  background: var(--ember);
+}
+
 /* ---- rotation countdown (quiet corner clock, no label) ---- */
 
 .rotation-clock {
@@ -480,8 +537,22 @@
 /* ---- hero ---- */
 
 .hero {
-  padding-top: clamp(90px, 13vh, 150px);
-  text-align: center;
+  padding-top: clamp(72px, 10vh, 120px);
+  padding-bottom: clamp(40px, 6vw, 80px);
+}
+
+/* split stage: the argument left, the machine right */
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 6.4fr) minmax(0, 5.6fr);
+  gap: clamp(36px, 4.5vw, 72px);
+  align-items: center;
+}
+@media (max-width: 1019px) {
+  .hero__grid {
+    grid-template-columns: 1fr;
+    gap: 52px;
+  }
 }
 
 .hero__badge {
@@ -501,8 +572,12 @@
 }
 
 .hero__title {
-  font-size: clamp(2.7rem, 7.6vw, 6rem);
-  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: clamp(2.9rem, 5.6vw, 5.3rem);
+  line-height: 1;
+  margin-top: 30px;
 }
 .hero__title .typed {
   color: var(--ember);
@@ -523,16 +598,16 @@
 }
 
 .hero__lead {
-  margin: 28px auto 0;
+  margin: 26px 0 0;
+  max-width: 48ch;
 }
 
 .hero__cta {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
   gap: 14px;
-  margin-top: 38px;
+  margin-top: 36px;
 }
 .hero__ver {
   font-family: var(--font-mono);
@@ -541,22 +616,29 @@
   opacity: 0.75;
 }
 
-.hero__stats {
+/* the spec strip: numbers riveted to the bench, not floating in space */
+.hero__specs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(40px, 5vw, 60px);
+  border-block: 1px solid var(--line-strong);
+}
+.hero__spec {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 36px;
-  margin-top: 34px;
+  flex-direction: column;
+  gap: 3px;
+  padding: 16px 20px 14px;
 }
-.hero__stat {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
+.hero__spec:first-child {
+  padding-left: 0;
 }
-.hero__stat b {
-  font-size: 1.05rem;
+.hero__spec + .hero__spec {
+  border-left: 1px solid var(--line);
+}
+.hero__spec b {
+  font-size: 1.45rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: var(--bone);
   font-variant-numeric: tabular-nums;
 }
@@ -608,8 +690,34 @@
 .frame.is-in {
   transform: none;
 }
+
+/* on the hero stage the frame sits angled, like a monitor on the bench,
+   bleeding past the grid edge */
+@media (min-width: 1020px) {
+  .hero__stage {
+    perspective: 1500px;
+  }
+  .hero__stage .frame-wrap {
+    margin-top: 0;
+    width: 114%;
+  }
+  .hero__stage .frame {
+    transform: rotateY(-10deg) rotateX(3deg) scale(0.97);
+    transform-origin: left center;
+  }
+  .hero__stage .frame.is-in {
+    transform: rotateY(-6deg) rotateX(1.5deg);
+  }
+}
+@media (max-width: 1019px) {
+  .hero__stage .frame-wrap {
+    margin-top: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .frame {
+  .frame,
+  .hero__stage .frame,
+  .hero__stage .frame.is-in {
     transform: none;
   }
 }
@@ -798,8 +906,32 @@
 
 /* ---- manifesto (scroll-fill text) ---- */
 
+/* marginalia editorial: the station label runs vertical in the left margin,
+   the argument pulls left of center */
 .manifesto {
-  max-width: 900px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(28px, 4.5vw, 68px);
+  max-width: 1060px;
+}
+.manifesto__side {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  align-self: start;
+  letter-spacing: 0.34em;
+  color: color-mix(in oklab, var(--ember) 55%, transparent);
+  padding-top: 6px;
+}
+.manifesto__body {
+  max-width: 840px;
+}
+@media (max-width: 760px) {
+  .manifesto {
+    grid-template-columns: 1fr;
+  }
+  .manifesto__side {
+    display: none;
+  }
 }
 .manifesto__text {
   margin-top: 26px;
@@ -822,11 +954,77 @@
 
 /* ---- bento grid ---- */
 
+/* sticky split: header and numbers hold the left column while the cards
+   scroll past on the right */
+.inside {
+  display: grid;
+  grid-template-columns: minmax(280px, 4.2fr) minmax(0, 7.8fr);
+  gap: clamp(40px, 5vw, 88px);
+  align-items: start;
+}
+.inside__head {
+  position: sticky;
+  top: 118px;
+}
+.inside__stats {
+  display: flex;
+  flex-direction: column;
+  margin-top: clamp(32px, 4vw, 52px);
+  border-top: 1px solid var(--line-strong);
+}
+.inside__stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--line);
+}
+.inside__stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--bone);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 1019px) {
+  .inside {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .inside__head {
+    position: static;
+  }
+  .inside__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 28px;
+  }
+}
+
 .bento {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-top: clamp(40px, 6vw, 64px);
+}
+
+/* inside the split, cards run two columns with a staggered rhythm */
+.bento--split {
+  grid-template-columns: 1fr 1fr;
+  margin-top: 0;
+  padding-bottom: 52px;
+}
+@media (min-width: 1020px) {
+  .bento--split > :nth-child(even) {
+    translate: 0 52px;
+  }
+}
+@media (max-width: 620px) {
+  .bento--split {
+    grid-template-columns: 1fr;
+    padding-bottom: 0;
+  }
 }
 @media (max-width: 920px) {
   .bento {
@@ -1061,11 +1259,25 @@
   color: color-mix(in oklab, var(--ember) 80%, white);
 }
 
+/* pedestal: the detected platform gets the full-width featured slab,
+   the other two sit beneath it */
 .dl-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-top: clamp(36px, 5vw, 56px);
+}
+.dl-grid > :first-child {
+  grid-column: 1 / -1;
+}
+.dl-grid > :first-child .dl-card {
+  border-color: color-mix(in oklab, var(--ember) 30%, var(--line-strong));
+  background: color-mix(in oklab, var(--iron-1) 92%, transparent);
+}
+.dl-grid > :first-child .dl-card__assets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
 }
 @media (max-width: 980px) {
   .dl-grid {
