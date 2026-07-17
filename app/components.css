@@ -379,13 +379,18 @@
   background: var(--ember);
 }
 
-/* ---- rotation countdown (quiet corner clock, no label) ---- */
+/* ---- background console (corner clock + manual prev/next) ---- */
 
-.rotation-clock {
+.bg-console {
   position: fixed;
   right: 18px;
   bottom: 16px;
   z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bg-console__clock {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -394,9 +399,8 @@
   color: var(--bone-faint);
   font-variant-numeric: tabular-nums;
   user-select: none;
-  pointer-events: none;
 }
-.rotation-clock::before {
+.bg-console__clock::before {
   /* the same ember diamond the pattern ticker speaks in */
   content: "";
   width: 5px;
@@ -404,6 +408,27 @@
   background: var(--ember);
   rotate: 45deg;
   opacity: 0.75;
+}
+.bg-console__btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in oklab, var(--iron-1) 70%, transparent);
+  color: var(--bone-faint);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.bg-console__btn:hover {
+  color: var(--ember);
+  border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
 }
 
 /* ---- scroll progress ---- */

@@ -49,16 +49,22 @@ const fmt = (ms: number) => {
   return `${hh}:${mm}:${ss}`;
 };
 
+const OFFSET_KEY = "anvil-bg-offset";
+
 export default function BackgroundSwitcher() {
   // resolved on the client only, so server markup never guesses the day
-  const [i, setI] = useState<number | null>(null);
+  const [day, setDay] = useState<number | null>(null);
+  const [offset, setOffset] = useState(0);
   const [clock, setClock] = useState<string | null>(null);
 
   useEffect(() => {
+    const saved = parseInt(localStorage.getItem(OFFSET_KEY) ?? "0", 10);
+    if (!Number.isNaN(saved)) setOffset(saved);
+
     let timer = 0;
     const apply = () => {
       const now = Date.now();
-      setI(indexFor(now));
+      setDay(indexFor(now));
       // wake just past the next 04:00 CAT boundary and rotate
       timer = window.setTimeout(apply, msToNext(now) + 1000);
     };
@@ -77,7 +83,18 @@ export default function BackgroundSwitcher() {
     };
   }, []);
 
-  if (i === null) return null;
+  // manual steps ride on top of the daily rotation and persist
+  const shift = (d: number) => {
+    setOffset((o) => {
+      const next = o + d;
+      localStorage.setItem(OFFSET_KEY, String(next));
+      return next;
+    });
+  };
+
+  if (day === null) return null;
+  const n = BACKGROUNDS.length;
+  const i = (((day + offset) % n) + n) % n;
   const { Comp, space } = BACKGROUNDS[i];
 
   return (
@@ -87,11 +104,29 @@ export default function BackgroundSwitcher() {
       {space && <StarVoid key={`void-${i}`} intensity={space} />}
       <Comp key={i} />
 
-      {clock && (
-        <div className="rotation-clock mono" aria-hidden>
-          {clock}
-        </div>
-      )}
+      <div className="bg-console">
+        <button
+          type="button"
+          className="bg-console__btn"
+          onClick={() => shift(-1)}
+          aria-label="Previous background"
+        >
+          ‹
+        </button>
+        {clock && (
+          <span className="bg-console__clock mono" aria-hidden>
+            {clock}
+          </span>
+        )}
+        <button
+          type="button"
+          className="bg-console__btn"
+          onClick={() => shift(1)}
+          aria-label="Next background"
+        >
+          ›
+        </button>
+      </div>
     </>
   );
 }

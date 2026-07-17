@@ -161,8 +161,25 @@ code {
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  .footer {
-    scroll-snap-align: end;
+
+  /* the last station holds download and the footer together: one snap
+     point, content centered, footer at its base — never adrift on its own */
+  .station-end {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .station-end .section {
+    min-height: 0;
+    flex: 1;
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+    padding-block: 48px 24px;
+  }
+  .station-end .footer {
+    margin-top: auto;
   }
 }
 
