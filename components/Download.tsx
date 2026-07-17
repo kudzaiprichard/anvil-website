@@ -109,11 +109,13 @@ export default function Download({ release }: { release: Release }) {
               const here = p.id === os;
               return (
                 <Fragment key={p.id}>
-                  {/* labeled divider so each device's builds read at a glance */}
+                  {/* labeled divider so each device's builds read at a glance;
+                      the detected platform keeps its single trailing label */}
                   <li
                     className={`deck__group ${here ? "deck__group--here" : ""}`}
                     aria-hidden
                   >
+                    {!here && <span className="mono">{p.name}</span>}
                     <i className="deck__group-line" />
                     <span className="mono">
                       {p.name}
