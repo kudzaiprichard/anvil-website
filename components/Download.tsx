@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Reveal from "./Reveal";
 import { AppleIcon, ArrowIcon, DownloadIcon, LinuxIcon, WindowsIcon } from "./icons";
 import { RELEASES_URL, type Platform, type Release } from "@/lib/releases";
@@ -106,24 +106,40 @@ export default function Download({ release }: { release: Release }) {
           <ul className="deck__list">
             {release.platforms.map((p) => {
               const Icon = OS_ICON[p.id];
-              return p.assets.map((a) => (
-                <li key={a.file}>
-                  <a
-                    className={`deck__row ${p.id === os ? "deck__row--here" : ""}`}
-                    href={a.url}
-                    download
-                    title={`${p.name} · ${a.label} · v${release.version}`}
+              const here = p.id === os;
+              return (
+                <Fragment key={p.id}>
+                  {/* labeled divider so each device's builds read at a glance */}
+                  <li
+                    className={`deck__group ${here ? "deck__group--here" : ""}`}
+                    aria-hidden
                   >
-                    <span className="deck__os" aria-hidden>
-                      <Icon width={15} height={15} />
+                    <i className="deck__group-line" />
+                    <span className="mono">
+                      {p.name}
+                      {here ? " · detected" : ""}
                     </span>
-                    <span className="deck__file mono">{a.file}</span>
-                    <span className="deck__detail">{a.detail}</span>
-                    <span className="deck__size mono">{a.size}</span>
-                    <DownloadIcon width={13} height={13} />
-                  </a>
-                </li>
-              ));
+                  </li>
+                  {p.assets.map((a) => (
+                    <li key={a.file}>
+                      <a
+                        className={`deck__row ${here ? "deck__row--here" : ""}`}
+                        href={a.url}
+                        download
+                        title={`${p.name} · ${a.label} · v${release.version}`}
+                      >
+                        <span className="deck__os" aria-hidden>
+                          <Icon width={15} height={15} />
+                        </span>
+                        <span className="deck__file mono">{a.file}</span>
+                        <span className="deck__detail">{a.detail}</span>
+                        <span className="deck__size mono">{a.size}</span>
+                        <DownloadIcon width={13} height={13} />
+                      </a>
+                    </li>
+                  ))}
+                </Fragment>
+              );
             })}
           </ul>
           <div className="deck__foot">

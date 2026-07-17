@@ -1229,6 +1229,28 @@
   flex-direction: column;
   gap: 2px;
 }
+/* labeled group divider: hairline running out to the platform's name */
+.deck__group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px 5px;
+}
+.deck__group:first-child {
+  padding-top: 4px;
+}
+.deck__group-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.deck__group .mono {
+  font-size: 10px;
+}
+.deck__group--here .mono {
+  color: var(--ember);
+}
+
 .deck__row {
   display: flex;
   align-items: center;
