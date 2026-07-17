@@ -4,17 +4,41 @@ import { useEffect, useRef } from "react";
 
 /*
  * The living background: a flow-field of particle streaks drifting across the
- * iron plate. Particles follow a smooth sine/cosine vector field that slowly
- * evolves with time, shifts as you scroll, and bends away from the cursor.
- * Mostly faint bone with a few ember sparks — flat color, no glow. Reduced
- * motion renders nothing.
+ * iron plate. Instead of wandering noise, the field cycles through a
+ * choreographed set of designed patterns — laminar silk waves, a spiral ring
+ * vortex, twin counter-rotating vortices slowly orbiting each other, and a
+ * precessing dipole rosette — crossfading smoothly from one to the next so the
+ * streaks keep organizing into deliberate compositions. Each particle draws
+ * its own comet trail (tapering alpha, crisp on a cleared canvas — no
+ * accumulation smudge), embers carry a bright head like the silk field's
+ * signals. Scroll shifts the field's phase, the cursor bends nearby streaks
+ * away. Flat color, no glow. Reduced motion renders nothing.
  */
 
-const COUNT = 160;
-const EMBER_RATIO = 0.16;
-const TRAIL = 0.085; // per-frame fade; lower = longer trails
+const COUNT = 175;
+const EMBER_RATIO = 0.11;
+const DRIFT_RATIO = 0.35; // fraction that always rides the waves field
+const HISTORY = 44; // trail points per particle
+const BUCKETS = 8; // alpha bands the trails are batched into
+const DWELL = 12; // seconds a pattern holds its shape
+const FADE = 4; // seconds to morph into the next pattern
+const SPEED = 1.15;
 
-type P = { x: number; y: number; vx: number; vy: number; ember: boolean };
+const BONE_HEAD = 0.2; // trail alpha at the head — quiet, behind the content
+const EMBER_HEAD = 0.4;
+
+type P = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  ember: boolean;
+  drifter: boolean; // ambient ensemble vs. pattern soloist
+  pace: number; // per-particle speed factor
+  hx: number[]; // trail history, oldest first
+  hy: number[];
+};
+type Vec = { x: number; y: number };
 
 export default function FieldCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -28,6 +52,7 @@ export default function FieldCanvas() {
 
     let w = 0;
     let h = 0;
+    let sc = 0; // scroll phase, set once per frame
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
     const resize = () => {
@@ -36,10 +61,68 @@ export default function FieldCanvas() {
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
     };
     resize();
     window.addEventListener("resize", resize);
+
+    /* ---- the designed patterns; each writes a unit direction into v ---- */
+
+    // laminar ribbons undulating gently to the right
+    const waves = (x: number, y: number, t: number, v: Vec) => {
+      const a =
+        -0.3 +
+        0.6 * Math.sin(y * 0.0042 + t * 0.55 + sc) +
+        0.22 * Math.sin(x * 0.0021 - t * 0.35);
+      v.x = Math.cos(a);
+      v.y = Math.sin(a);
+    };
+
+    // one grand vortex: orbits steer toward a breathing ring, arms spiral in
+    const vortex = (x: number, y: number, t: number, v: Vec) => {
+      const cx = w * 0.5;
+      const cy = h * 0.46;
+      const dx = x - cx;
+      const dy = y - cy;
+      const r = Math.hypot(dx, dy) || 1;
+      const R = Math.min(w, h) * (0.3 + 0.05 * Math.sin(t * 0.4));
+      const tilt = Math.max(-0.35, Math.min(0.35, ((r - R) / R) * 0.5));
+      const a = Math.atan2(dy, dx) + Math.PI / 2 + tilt + sc * 0.4;
+      v.x = Math.cos(a);
+      v.y = Math.sin(a);
+    };
+
+    // twin counter-rotating vortices, the pair itself slowly orbiting
+    const twin = (x: number, y: number, t: number, v: Vec) => {
+      const s2 = Math.min(w, h) ** 2;
+      const rot = t * 0.06 + sc * 0.3;
+      const ox = Math.cos(rot) * w * 0.2;
+      const oy = Math.sin(rot) * h * 0.16;
+      let vx = 0;
+      let vy = 0;
+      for (const spin of [1, -1]) {
+        const dx = x - (w * 0.5 + ox * spin);
+        const dy = y - (h * 0.5 + oy * spin);
+        // tighter falloff than the grand vortex so both swirls read clearly
+        const fall = (s2 * 0.05) / (dx * dx + dy * dy + s2 * 0.008);
+        vx += -dy * spin * fall;
+        vy += dx * spin * fall;
+      }
+      const m = Math.hypot(vx, vy) || 1;
+      v.x = vx / m;
+      v.y = vy / m;
+    };
+
+    // dipole rosette: field-line lobes around the center, slowly precessing
+    const rose = (x: number, y: number, t: number, v: Vec) => {
+      const th = Math.atan2(y - h * 0.46, x - w * 0.5);
+      const a = 2 * th + Math.PI / 2 + t * 0.12 + sc * 0.4;
+      v.x = Math.cos(a);
+      v.y = Math.sin(a);
+    };
+
+    const patterns = [waves, vortex, twin, rose];
+    const va: Vec = { x: 0, y: 0 };
+    const vb: Vec = { x: 0, y: 0 };
 
     const parts: P[] = Array.from({ length: COUNT }, () => ({
       x: Math.random() * window.innerWidth,
@@ -47,6 +130,10 @@ export default function FieldCanvas() {
       vx: 0,
       vy: 0,
       ember: Math.random() < EMBER_RATIO,
+      drifter: Math.random() < DRIFT_RATIO,
+      pace: 0.8 + Math.random() * 0.5,
+      hx: [],
+      hy: [],
     }));
 
     let mx = -9999;
@@ -62,62 +149,121 @@ export default function FieldCanvas() {
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerout", onLeave);
 
-    let raf = 0;
-    let t = 0;
+    /* trail segments batched into alpha bands: one stroke per band per color
+       instead of one per segment — the whole field is ~2×BUCKETS strokes */
+    const strokeTrails = (ember: boolean) => {
+      const head = ember ? EMBER_HEAD : BONE_HEAD;
+      ctx.lineWidth = ember ? 1.1 : 1;
+      for (let b = 0; b < BUCKETS; b++) {
+        const fade = (b + 0.5) / BUCKETS; // 0 head → 1 tail
+        const a = head * (1 - fade) * (1 - fade);
+        ctx.strokeStyle = ember
+          ? `oklch(0.72 0.155 50 / ${a})`
+          : `oklch(0.93 0.006 82 / ${a})`;
+        ctx.beginPath();
+        for (const p of parts) {
+          if (p.ember !== ember) continue;
+          const n = p.hx.length;
+          if (n < 2) continue;
+          // history is oldest-first; bucket 0 holds the newest segments
+          const from = Math.max(0, n - 1 - Math.round(((b + 1) / BUCKETS) * (n - 1)));
+          const to = n - 1 - Math.round((b / BUCKETS) * (n - 1));
+          if (to <= from) continue;
+          ctx.moveTo(p.hx[from], p.hy[from]);
+          for (let k = from + 1; k <= to; k++) ctx.lineTo(p.hx[k], p.hy[k]);
+        }
+        ctx.stroke();
+      }
+    };
 
-    const tick = () => {
+    let raf = 0;
+    let t0 = -1;
+
+    const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
       if (document.hidden) return;
-      t += 0.0035;
-      const scroll = window.scrollY * 0.0006;
+      if (t0 < 0) t0 = now; // rAF timestamps can predate mount-time clocks
+      const t = (now - t0) / 1000;
+      sc = window.scrollY * 0.0006;
 
-      // fade previous frame out instead of clearing — gives streak trails
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.fillStyle = `rgba(0, 0, 0, ${TRAIL})`;
-      ctx.fillRect(0, 0, w, h);
-      ctx.globalCompositeOperation = "source-over";
+      // which pattern is on stage, and how far into the morph to the next
+      const cycle = DWELL + FADE;
+      const ph = (t / cycle) % patterns.length;
+      const i = Math.floor(ph);
+      const into = (ph - i) * cycle;
+      const raw = Math.max(0, (into - DWELL) / FADE);
+      const mix = raw * raw * (3 - 2 * raw); // smoothstep crossfade
+      const cur = patterns[i];
+      const nxt = patterns[(i + 1) % patterns.length];
 
       for (const p of parts) {
-        // smooth pseudo-noise vector field, phase-shifted by time and scroll
-        const a =
-          Math.sin(p.y * 0.0013 + t + scroll) +
-          Math.cos(p.x * 0.0011 - t * 1.3) +
-          Math.sin((p.x + p.y) * 0.0005 + t * 0.7);
-        const angle = a * Math.PI;
-        let ax = Math.cos(angle) * 0.06;
-        let ay = Math.sin(angle) * 0.06;
+        // drifters keep the whole frame alive while the soloists gather
+        // into the vortex / twin / rosette figures
+        if (p.drifter) {
+          waves(p.x, p.y, t, va);
+        } else {
+          cur(p.x, p.y, t, va);
+        }
+        let dx = va.x;
+        let dy = va.y;
+        if (!p.drifter && mix > 0) {
+          nxt(p.x, p.y, t, vb);
+          dx = dx * (1 - mix) + vb.x * mix;
+          dy = dy * (1 - mix) + vb.y * mix;
+        }
+        const m = Math.hypot(dx, dy) || 1;
+        const spd = SPEED * p.pace * (p.ember ? 1.2 : 1);
+        let tx = (dx / m) * spd;
+        let ty = (dy / m) * spd;
 
         // gentle repulsion from the cursor
-        const dx = p.x - mx;
-        const dy = p.y - my;
-        const d2 = dx * dx + dy * dy;
+        const rx = p.x - mx;
+        const ry = p.y - my;
+        const d2 = rx * rx + ry * ry;
         if (d2 < 32400) {
           const d = Math.sqrt(d2) || 1;
-          const f = ((180 - d) / 180) * 0.6;
-          ax += (dx / d) * f;
-          ay += (dy / d) * f;
+          const f = ((180 - d) / 180) * 1.4;
+          tx += (rx / d) * f;
+          ty += (ry / d) * f;
         }
 
-        p.vx = (p.vx + ax) * 0.96;
-        p.vy = (p.vy + ay) * 0.96;
-        const nx = p.x + p.vx;
-        const ny = p.y + p.vy;
+        // ease toward the field — smooth, curving turns
+        p.vx += (tx - p.vx) * 0.07;
+        p.vy += (ty - p.vy) * 0.07;
+        p.x += p.vx;
+        p.y += p.vy;
 
-        ctx.strokeStyle = p.ember
-          ? "oklch(0.72 0.155 50 / 0.5)"
-          : "oklch(0.93 0.006 82 / 0.14)";
-        ctx.lineWidth = p.ember ? 1.2 : 1;
+        // wrap breaks the trail so no line shoots across the screen
+        if (p.x < -10 || p.x > w + 10 || p.y < -10 || p.y > h + 10) {
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
+          if (p.y < -10) p.y = h + 10;
+          if (p.y > h + 10) p.y = -10;
+          p.hx.length = 0;
+          p.hy.length = 0;
+        }
+
+        p.hx.push(p.x);
+        p.hy.push(p.y);
+        if (p.hx.length > HISTORY) {
+          p.hx.shift();
+          p.hy.shift();
+        }
+      }
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      strokeTrails(false);
+      strokeTrails(true);
+
+      // embers carry a dim comet head, kin to the silk field's signals
+      ctx.fillStyle = "oklch(0.8 0.12 52 / 0.45)";
+      for (const p of parts) {
+        if (!p.ember || p.hx.length < 2) continue;
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(nx, ny);
-        ctx.stroke();
-
-        p.x = nx;
-        p.y = ny;
-        if (p.x < -10) p.x = w + 10;
-        if (p.x > w + 10) p.x = -10;
-        if (p.y < -10) p.y = h + 10;
-        if (p.y > h + 10) p.y = -10;
+        ctx.arc(p.x, p.y, 1.3, 0, Math.PI * 2);
+        ctx.fill();
       }
     };
     raf = requestAnimationFrame(tick);

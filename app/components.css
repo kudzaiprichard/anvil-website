@@ -9,47 +9,31 @@
   pointer-events: none;
 }
 
-/* ---- background preview switcher (review tool) ---- */
+/* ---- rotation countdown (quiet corner clock, no label) ---- */
 
-.bg-switch {
+.rotation-clock {
   position: fixed;
-  bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 70;
+  right: 18px;
+  bottom: 16px;
+  z-index: 40;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: color-mix(in oklab, var(--iron-0) 88%, transparent);
-  backdrop-filter: blur(12px);
+  gap: 9px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--bone-faint);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  pointer-events: none;
 }
-.bg-switch__btn {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--bone-dim);
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
-}
-.bg-switch__btn:hover {
-  color: var(--ember);
-  border-color: color-mix(in oklab, var(--ember) 60%, var(--line));
-}
-.bg-switch__label {
-  min-width: 215px;
-  text-align: center;
-  color: var(--bone-dim);
+.rotation-clock::before {
+  /* the same ember diamond the pattern ticker speaks in */
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: var(--ember);
+  rotate: 45deg;
+  opacity: 0.75;
 }
 
 /* ---- scroll progress ---- */
@@ -459,7 +443,8 @@
   z-index: 1;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--iron-1) 55%, transparent);
+  /* opaque so the living backgrounds never show through the ticker */
+  background: var(--iron-1);
   padding-block: 11px;
   user-select: none;
 }

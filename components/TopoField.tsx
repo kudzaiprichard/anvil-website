@@ -4,21 +4,67 @@ import { useEffect, useRef } from "react";
 
 /*
  * The living background, cartography edition: an animated topographic map.
- * A smooth scalar "terrain" evolves slowly with time; marching squares traces
- * its elevation contours as hairlines — bone for regular contours, ember for
- * index contours. Scrolling drifts the landscape, and the terrain rises under
- * the cursor so contours bulge around it. Quiet enough to sit behind text.
- * Reduced motion renders one static survey.
+ * A domain-warped scalar "terrain" evolves slowly with time — the warp bends
+ * the field so contours flow like real ridge lines instead of pooling into
+ * blobs. Marching squares traces the elevation contours as hairlines — bone
+ * for regular contours, ember for index contours — and each line's alpha
+ * rises with elevation, lighting the relief from above. Scroll drifts the
+ * landscape on an eased spring, and the terrain swells under a smoothed
+ * cursor. Quiet enough to sit behind text. Reduced motion renders one
+ * static survey.
  */
 
-const CELL = 26; // sampling grid pitch in px
+const CELL = 20; // sampling grid pitch in px — finer = smoother curves
 const LEVELS = 12;
 const INDEX_EVERY = 4; // every Nth contour is an ember index line
 const BUMP_R = 130; // cursor bump radius
-const BUMP_H = 0.4; // cursor bump height
+const BUMP_H = 0.38; // cursor bump height
+const WARP = 70; // domain-warp amplitude in px
 
-const BONE_LINE = "oklch(0.93 0.006 82 / 0.095)";
-const EMBER_LINE = "oklch(0.72 0.155 50 / 0.21)";
+/* autonomous terrain features: peaks and basins that wander slowly and
+   breathe on their own lifecycles — bullseyes emerge, merge into saddles,
+   and sink away without any cursor involved */
+type Peak = {
+  cx: number; // anchor, 0..1 of viewport
+  cy: number;
+  ax: number; // wander amplitude, 0..1 of viewport
+  ay: number;
+  fx: number; // wander speeds
+  fy: number;
+  px: number; // wander phases
+  py: number;
+  sig2: number; // 2σ² of the gaussian footprint, px²
+  hgt: number; // height (negative = basin)
+  lf: number; // lifecycle speed
+  lp: number; // lifecycle phase
+  // per-frame state
+  x: number;
+  y: number;
+  h: number;
+  cut: number;
+};
+
+const makePeak = (basin: boolean): Peak => {
+  const sig = 85 + Math.random() * 75;
+  return {
+    cx: 0.15 + Math.random() * 0.7,
+    cy: 0.15 + Math.random() * 0.7,
+    ax: 0.12 + Math.random() * 0.16,
+    ay: 0.1 + Math.random() * 0.14,
+    fx: 0.25 + Math.random() * 0.3,
+    fy: 0.2 + Math.random() * 0.3,
+    px: Math.random() * Math.PI * 2,
+    py: Math.random() * Math.PI * 2,
+    sig2: 2 * sig * sig,
+    hgt: (basin ? -1 : 1) * (0.4 + Math.random() * 0.2),
+    lf: 0.8 + Math.random() * 0.6,
+    lp: Math.random() * Math.PI * 2,
+    x: 0,
+    y: 0,
+    h: 0,
+    cut: 9 * sig * sig,
+  };
+};
 
 export default function TopoField() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -49,37 +95,78 @@ export default function TopoField() {
     resize();
     window.addEventListener("resize", resize);
 
-    let mx = -99999;
-    let my = -99999;
+    // smoothed cursor with ease-back grip, matching the other fields
+    let tx = -1;
+    let ty = -1;
+    let sx = 0;
+    let sy = 0;
+    let grip = 0;
+    let hasCursor = false;
     const onMove = (e: PointerEvent) => {
-      mx = e.clientX;
-      my = e.clientY;
+      if (!hasCursor) {
+        sx = e.clientX;
+        sy = e.clientY;
+        hasCursor = true;
+      }
+      tx = e.clientX;
+      ty = e.clientY;
     };
     const onLeave = () => {
-      mx = -99999;
-      my = -99999;
+      tx = -1;
+      ty = -1;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerout", onLeave);
 
-    /* layered-sine terrain, normalized to roughly 0..1 */
+    /* three peaks and two basins, living their own slow lives */
+    const peaks = [
+      makePeak(false),
+      makePeak(false),
+      makePeak(false),
+      makePeak(true),
+      makePeak(true),
+    ];
+
+    /* domain-warped layered-sine terrain, normalized to roughly 0..1 —
+       the warp bends the sample space so contours meander like ridge lines,
+       and the wandering peaks raise their bullseyes on top */
     const sample = (t: number, scroll: number) => {
       const s = scroll * 0.00045;
       const sigma2 = 2 * BUMP_R * BUMP_R;
+
+      // advance each feature: wander position + breathe height
+      const active: Peak[] = [];
+      for (const p of peaks) {
+        const life = Math.max(0, Math.sin(t * p.lf + p.lp)) ** 1.3;
+        p.h = p.hgt * life;
+        if (Math.abs(p.h) < 0.03) continue; // dormant
+        p.x = (p.cx + p.ax * Math.sin(t * p.fx + p.px)) * w;
+        p.y = (p.cy + p.ay * Math.cos(t * p.fy + p.py)) * h;
+        active.push(p);
+      }
+
       for (let gy = 0; gy < rows; gy++) {
         const y = gy * CELL;
         for (let gx = 0; gx < cols; gx++) {
           const x = gx * CELL;
+          const wx = x + WARP * Math.sin(y * 0.004 + t * 0.35);
+          const wy = y + WARP * Math.cos(x * 0.0034 - t * 0.28);
           let n =
             0.5 +
-            0.24 * Math.sin(x * 0.0015 + t * 0.9 + s) +
-            0.24 * Math.cos(y * 0.0017 - t * 0.7 + s * 1.4) +
-            0.17 * Math.sin((x + y) * 0.001 + t * 0.5) +
-            0.13 * Math.sin(Math.hypot(x - w * 0.5, y - h * 0.5) * 0.0021 - t * 0.8);
-          if (mx > -9999) {
-            const dx = x - mx;
-            const dy = y - my;
-            n += BUMP_H * Math.exp(-(dx * dx + dy * dy) / sigma2);
+            0.21 * Math.sin(wx * 0.0016 + t * 0.8 + s) +
+            0.21 * Math.cos(wy * 0.0018 - t * 0.6 + s * 1.3) +
+            0.13 * Math.sin((wx + wy) * 0.001 + t * 0.45) +
+            0.09 * Math.sin(Math.hypot(x - w * 0.55, y - h * 0.4) * 0.002 - t * 0.7);
+          for (const p of active) {
+            const dx = x - p.x;
+            const dy = y - p.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < p.cut) n += p.h * Math.exp(-d2 / p.sig2);
+          }
+          if (grip > 0.01) {
+            const dx = x - sx;
+            const dy = y - sy;
+            n += grip * BUMP_H * Math.exp(-(dx * dx + dy * dy) / sigma2);
           }
           vals[gy * cols + gx] = n;
         }
@@ -154,13 +241,27 @@ export default function TopoField() {
       }
     };
 
-    const draw = (t: number) => {
-      sample(t, window.scrollY);
+    const draw = (t: number, scroll: number) => {
+      sample(t, scroll);
       ctx.clearRect(0, 0, w, h);
-      ctx.lineWidth = 1;
+      ctx.lineCap = "round";
+      // a luminous survey sweep climbs from the valleys to the summits,
+      // brightening each contour ring as it passes; >1 range rests between
+      const phase = (t * 0.38) % 1.35;
       for (let l = 0; l < LEVELS; l++) {
         const level = 0.08 + (l * 0.88) / (LEVELS - 1);
-        ctx.strokeStyle = l % INDEX_EVERY === 0 ? EMBER_LINE : BONE_LINE;
+        const rise = l / (LEVELS - 1); // 0 valley floor → 1 summit
+        const dp = (rise - phase) / 0.16;
+        const sweep = Math.exp(-dp * dp);
+        if (l % INDEX_EVERY === 0) {
+          ctx.strokeStyle = `oklch(${0.72 + sweep * 0.08} 0.155 50 / ${
+            0.2 + rise * 0.14 + sweep * 0.3
+          })`;
+          ctx.lineWidth = 1.2 + sweep * 0.5;
+        } else {
+          ctx.strokeStyle = `oklch(0.93 0.006 82 / ${0.09 + rise * 0.08 + sweep * 0.22})`;
+          ctx.lineWidth = 1 + sweep * 0.3;
+        }
         ctx.beginPath();
         trace(level);
         ctx.stroke();
@@ -168,7 +269,7 @@ export default function TopoField() {
     };
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      draw(1.7);
+      draw(1.7, 0);
       return () => {
         window.removeEventListener("resize", resize);
         window.removeEventListener("pointermove", onMove);
@@ -178,11 +279,21 @@ export default function TopoField() {
 
     let raf = 0;
     let t = 0;
+    let smooth = window.scrollY; // eased scroll → the landscape glides
     const tick = () => {
       raf = requestAnimationFrame(tick);
       if (document.hidden) return;
-      t += 0.0038;
-      draw(t);
+      t += 0.0048;
+      smooth += (window.scrollY - smooth) * 0.1;
+
+      const present = tx >= 0;
+      grip += ((present ? 1 : 0) - grip) * 0.08;
+      if (present) {
+        sx += (tx - sx) * 0.1;
+        sy += (ty - sy) * 0.1;
+      }
+
+      draw(t, smooth);
     };
     raf = requestAnimationFrame(tick);
 
