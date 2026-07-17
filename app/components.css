@@ -36,7 +36,11 @@
   opacity: 1;
 }
 
-/* ---- site loader (forge warming up) ---- */
+/* ---- site loader: the mark gets forged in front of you ----
+   0s      the outline draws itself in bone hairline, piece by piece
+   ~1.15s  the strike lands: ember flash, sparks scatter
+   ~1.2s   the mark fills white-hot, cools through ember to bone
+   after   a slow idle glow while the page finishes loading           */
 
 .loader {
   position: fixed;
@@ -46,63 +50,201 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 30px;
   background: var(--iron-0);
   color: var(--bone);
   transition:
-    opacity 0.65s var(--ease-out),
-    visibility 0.65s;
+    opacity 0.6s var(--ease-out),
+    visibility 0.6s;
 }
 .loader--leaving {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
-.loader__mark {
-  animation: loader-breathe 1.7s ease-in-out infinite;
-}
-.loader__sparks {
+
+.loader__stage {
+  position: relative;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  justify-content: center;
 }
-.loader__sparks span {
-  width: 6px;
-  height: 6px;
+.loader__mark {
+  position: relative;
+  z-index: 1;
+  animation: loader-idle 2.4s ease-in-out infinite 2.2s;
+}
+
+/* the outline forges itself: pathLength-normalized stroke draw */
+.loader__path {
+  stroke: var(--bone);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: loader-draw var(--ease-out) forwards;
+}
+.loader__path:nth-of-type(4) {
+  animation-duration: 0.65s;
+  animation-delay: 0.05s;
+}
+.loader__path:nth-of-type(5) {
+  animation-duration: 0.3s;
+  animation-delay: 0.55s;
+}
+.loader__path:nth-of-type(6) {
+  animation-duration: 0.35s;
+  animation-delay: 0.8s;
+}
+
+/* the strike fills it white-hot, cooling through ember to bone */
+.loader__fill {
+  opacity: 0;
+  fill: var(--ember);
+  animation: loader-fill 0.6s ease forwards 1.18s;
+}
+
+.loader__flash {
+  position: absolute;
+  inset: -44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, oklch(0.72 0.155 50 / 0.45) 0%, transparent 62%);
+  opacity: 0;
+  transform: scale(0.4);
+  animation: loader-flash 0.55s var(--ease-out) forwards 1.12s;
+}
+
+.loader__spark {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 5px;
+  height: 5px;
   background: var(--ember);
   rotate: 45deg;
-  opacity: 0.25;
-  animation: loader-spark 1.15s ease-in-out infinite;
+  opacity: 0;
+  animation: loader-burst 0.7s var(--ease-out) forwards 1.15s;
 }
-.loader__sparks span:nth-child(2) {
-  animation-delay: 0.18s;
+.loader__spark:nth-of-type(1) { --dx: 64px; --dy: -26px; }
+.loader__spark:nth-of-type(2) { --dx: 52px; --dy: 36px; }
+.loader__spark:nth-of-type(3) { --dx: -58px; --dy: -30px; }
+.loader__spark:nth-of-type(4) { --dx: -48px; --dy: 42px; }
+.loader__spark:nth-of-type(5) { --dx: 18px; --dy: -64px; }
+.loader__spark:nth-of-type(6) { --dx: -14px; --dy: -58px; }
+.loader__spark:nth-of-type(7) { --dx: 72px; --dy: 8px; }
+.loader__spark:nth-of-type(8) { --dx: -68px; --dy: 6px; }
+
+/* the work being done, one word at a time */
+.loader__word {
+  position: relative;
+  height: 16px;
+  width: 160px;
+  margin-top: 34px;
+  text-align: center;
 }
-.loader__sparks span:nth-child(3) {
-  animation-delay: 0.36s;
+.loader__word span {
+  position: absolute;
+  inset-inline: 0;
+  opacity: 0;
+  animation: loader-word 2.25s linear infinite;
 }
-@keyframes loader-breathe {
+.loader__word span:nth-child(2) {
+  animation-delay: 0.75s;
+}
+.loader__word span:nth-child(3) {
+  animation-delay: 1.5s;
+}
+
+@keyframes loader-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes loader-fill {
+  0% {
+    opacity: 0;
+    fill: color-mix(in oklab, var(--ember) 35%, white);
+  }
+  35% {
+    opacity: 1;
+    fill: var(--ember);
+  }
+  100% {
+    opacity: 1;
+    fill: var(--bone);
+  }
+}
+@keyframes loader-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+@keyframes loader-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
+  }
+}
+@keyframes loader-word {
+  0% {
+    opacity: 0;
+  }
+  9% {
+    opacity: 1;
+  }
+  28% {
+    opacity: 1;
+  }
+  37% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes loader-idle {
   0%,
   100% {
-    opacity: 0.65;
-    transform: scale(0.97);
+    opacity: 1;
   }
   50% {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes loader-spark {
-  0%,
-  100% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 1;
+    opacity: 0.82;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .loader__mark,
-  .loader__sparks span {
+  .loader__path,
+  .loader__flash,
+  .loader__spark,
+  .loader__mark {
     animation: none;
+  }
+  .loader__path {
+    stroke-dashoffset: 0;
+  }
+  .loader__fill {
+    animation: none;
+    opacity: 1;
+    fill: var(--bone);
+  }
+  .loader__word span {
+    animation: none;
+  }
+  .loader__word span:first-child {
     opacity: 1;
   }
 }
