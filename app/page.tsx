@@ -2,7 +2,6 @@ import BackgroundSwitcher from "@/components/BackgroundSwitcher";
 import Instruments from "@/components/Instruments";
 import StationRail from "@/components/StationRail";
 import Marquee from "@/components/Marquee";
-import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import Manifesto from "@/components/Manifesto";
 import Features from "@/components/Features";
@@ -20,7 +19,6 @@ export default async function Home() {
       <Instruments />
       <StationRail />
       <Marquee />
-      <Nav version={release.version} />
       <main id="main">
         <Hero version={release.version} releaseUrl={release.url} />
         <Manifesto />

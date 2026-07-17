@@ -334,9 +334,16 @@
   flex-direction: column;
   gap: 24px;
 }
-@media (min-width: 1400px) {
+/* the rail is the nav: compact on smaller desktops, labeled on wide ones */
+@media (min-width: 1020px) {
   .rail {
     display: flex;
+  }
+}
+@media (min-width: 1400px) {
+  .rail__label {
+    opacity: 0.55;
+    translate: 0 0;
   }
 }
 .rail__stop {
@@ -446,21 +453,7 @@
   pointer-events: none;
 }
 
-/* ---- nav: full-width bar that sticks after the top ticker scrolls away ---- */
-
-/* in flow: the nav belongs to screen one and scrolls away with it */
-.nav {
-  position: relative;
-  z-index: 50;
-}
-
-.nav__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  height: 62px;
-}
+/* ---- brand lockup (footer) ---- */
 
 .brand {
   display: inline-flex;
@@ -489,67 +482,6 @@
   }
 }
 
-.nav__links {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-.nav__links a {
-  position: relative;
-  padding: 6px 1px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--bone-dim);
-  transition: color 0.18s ease;
-}
-.nav__links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--ember);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s var(--ease-out);
-}
-.nav__links a:hover {
-  color: var(--bone);
-}
-.nav__links a:hover::after {
-  transform: scaleX(1);
-}
-@media (max-width: 720px) {
-  .nav__links {
-    display: none;
-  }
-}
-
-.nav__actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.nav__gh {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  color: var(--bone-dim);
-  transition:
-    color 0.15s ease,
-    background 0.15s ease;
-}
-.nav__gh:hover {
-  color: var(--bone);
-  background: var(--iron-2);
-}
-
 /* ---- hero ---- */
 
 .hero {
@@ -557,12 +489,12 @@
   padding-bottom: clamp(40px, 6vw, 80px);
 }
 
-/* screen one: marquee (~40px) + nav (62px) + hero fill the viewport, and
-   the hero centers in what's left; snapping to its end keeps it flush */
+/* screen one: the ticker (~42px) + hero fill the viewport, and the hero
+   centers in what's left; snapping to its end keeps it flush */
 @media (min-width: 1020px) {
   .hero {
-    height: calc(100svh - 104px);
-    min-height: 540px;
+    height: calc(100svh - 42px);
+    min-height: 560px;
     display: flex;
     align-items: center;
     padding-block: 0;
@@ -715,9 +647,6 @@
   .fade-in {
     opacity: 1;
     transform: none;
-    animation: none;
-  }
-  .nav {
     animation: none;
   }
   .hero__caret {

@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 
 /*
- * The station rail: a fixed instrument on the left edge marking the five
- * stations of the page. The active station lights ember as its section
- * crosses the viewport — part of the site's instrument family, with the
- * progress hairline (top) and the rotation countdown (bottom right).
- * Desktop only; small screens keep the clean stacked flow.
+ * The station rail is the site's navigation: a fixed instrument on the left
+ * edge with one stop per station. The active station lights ember as its
+ * section crosses the viewport, so you always know where you are. Part of
+ * the instrument family with the progress hairline (top) and the background
+ * console (bottom right). Desktop only; small screens scroll freely.
  */
 
 const STATIONS = [
@@ -16,6 +16,7 @@ const STATIONS = [
   { id: "inside", n: "03", label: "Inside" },
   { id: "open-source", n: "04", label: "Source" },
   { id: "download", n: "05", label: "Get" },
+  { id: "end", n: "06", label: "End" },
 ];
 
 export default function StationRail() {

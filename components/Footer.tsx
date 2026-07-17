@@ -33,7 +33,7 @@ const COLS = [
 
 export default function Footer({ version }: { version: string }) {
   return (
-    <footer className="footer">
+    <footer className="footer" id="end">
       <div className="container footer__inner">
         <div>
           <a href="#top" className="brand" aria-label="Anvil home">
