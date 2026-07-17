@@ -1155,18 +1155,24 @@
   flex: none;
 }
 
-/* ---- download ---- */
+/* ---- download: the command deck ---- */
 
-.dl-head {
-  text-align: center;
+.deck {
+  display: grid;
+  grid-template-columns: minmax(0, 5.4fr) minmax(0, 6.6fr);
+  gap: clamp(36px, 4.5vw, 76px);
+  align-items: center;
 }
-.dl-head .lead {
-  margin-inline: auto;
+@media (max-width: 1019px) {
+  .deck {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
 }
+
 .dl-release {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
   gap: 18px;
   margin-top: 20px;
@@ -1180,81 +1186,42 @@
   color: color-mix(in oklab, var(--ember) 80%, white);
 }
 
-/* pedestal: the detected platform gets the full-width featured slab,
-   the other two sit beneath it */
-.dl-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: clamp(36px, 5vw, 56px);
+/* one decisive action, then the paper trail */
+.deck__main {
+  margin-top: 36px;
 }
-.dl-grid > :first-child {
-  grid-column: 1 / -1;
+.deck__meta {
+  margin-top: 12px;
 }
-.dl-grid > :first-child .dl-card {
-  border-color: color-mix(in oklab, var(--ember) 30%, var(--line-strong));
-  background: color-mix(in oklab, var(--iron-1) 92%, transparent);
-}
-.dl-grid > :first-child .dl-card__assets {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 8px;
-}
-@media (max-width: 980px) {
-  .dl-grid {
-    grid-template-columns: 1fr;
-  }
+.deck__note {
+  margin-top: 24px;
+  color: var(--bone-dim);
+  max-width: 42ch;
 }
 
-.dl-card {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
+/* the manifest panel, in the app frame's own language */
+.deck__panel {
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  background: color-mix(in oklab, var(--iron-1) 82%, transparent);
-  transition:
-    transform 0.25s var(--ease-out),
-    border-color 0.25s ease;
+  background: color-mix(in oklab, var(--iron-1) 88%, transparent);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
 }
-.dl-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--line-strong);
-}
-.dl-card--current {
-  border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
-}
-
-.dl-card__head {
+.deck__bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 20px;
+  gap: 14px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--line);
 }
-.dl-card__id {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.dl-card__icon {
-  color: var(--bone-dim);
-}
-.dl-card__name {
-  font-size: 1.02rem;
-  font-weight: 650;
-}
-.dl-card__note {
-  display: block;
-  margin-top: 3px;
+.deck__bar .mono {
   text-transform: none;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
-.dl-card__badge {
-  color: var(--ember);
+.deck__ver {
+  margin-left: auto;
 }
-
-.dl-card__assets {
+.deck__list {
   list-style: none;
   margin: 0;
   padding: 8px;
@@ -1262,75 +1229,80 @@
   flex-direction: column;
   gap: 2px;
 }
-.dl-btn {
+.deck__row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  padding: 11px 12px;
-  border-radius: 9px;
-  transition: background 0.15s ease;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: var(--bone-dim);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
-.dl-btn:hover {
-  background: var(--iron-2);
+.deck__row:hover {
+  background: color-mix(in oklab, var(--iron-2) 65%, transparent);
+  color: var(--bone);
 }
-.dl-btn__main {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
+.deck__os {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  color: var(--bone-faint);
 }
-.dl-btn__label {
-  font-size: 0.94rem;
-  font-weight: 600;
-}
-.dl-btn--primary .dl-btn__label {
+.deck__row--here .deck__os {
   color: var(--ember);
 }
-.dl-btn__detail {
-  font-size: 0.8rem;
-  color: var(--bone-faint);
-  white-space: nowrap;
+.deck__file {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0.03em;
+  color: inherit;
 }
-.dl-btn__meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
+.deck__detail {
+  font-size: 12px;
   color: var(--bone-faint);
-  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.dl-btn__meta svg {
-  transition:
-    color 0.15s ease,
-    transform 0.18s var(--ease-out);
+.deck__size {
+  min-width: 58px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-.dl-btn:hover .dl-btn__meta svg {
+.deck__row > svg {
+  flex: none;
+  color: var(--bone-faint);
+  transition: color 0.2s ease;
+}
+.deck__row:hover > svg {
   color: var(--ember);
-  transform: translateY(2px);
+}
+.deck__foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+}
+.deck__foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+.deck__foot a:hover {
+  color: var(--ember);
+}
+@media (max-width: 560px) {
+  .deck__detail {
+    display: none;
+  }
 }
 
-.dl-foot {
-  margin-top: 28px;
-  text-align: center;
-  color: var(--bone-faint);
-  font-size: 0.92rem;
-}
-.dl-foot a {
-  color: var(--bone-dim);
-  border-bottom: 1px solid var(--line-strong);
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
-}
-.dl-foot a:hover {
-  color: var(--ember);
-  border-color: var(--ember);
-}
 
 /* ---- footer ---- */
 

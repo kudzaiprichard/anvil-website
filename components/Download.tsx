@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Reveal from "./Reveal";
 import { AppleIcon, ArrowIcon, DownloadIcon, LinuxIcon, WindowsIcon } from "./icons";
 import { RELEASES_URL, type Platform, type Release } from "@/lib/releases";
+
+/*
+ * The command deck: one decisive action on the left — download for the
+ * platform you're on — and the full build manifest on the right, styled
+ * like the app's own panels. Every build is one row; yours are marked.
+ */
 
 const OS_ICON = {
   macos: AppleIcon,
@@ -20,104 +26,118 @@ function detectOS(): Platform["id"] | null {
   return null;
 }
 
-function PlatformCard({
-  p,
-  version,
-  isCurrent,
-}: {
-  p: Platform;
-  version: string;
-  isCurrent: boolean;
-}) {
-  const Icon = OS_ICON[p.id];
-  return (
-    <div className={`dl-card ${isCurrent ? "dl-card--current" : ""}`}>
-      <div className="dl-card__head">
-        <div className="dl-card__id">
-          <span className="dl-card__icon">
-            <Icon width={22} height={22} />
-          </span>
-          <div>
-            <h3 className="dl-card__name">{p.name}</h3>
-            <span className="dl-card__note mono">{p.note}</span>
-          </div>
-        </div>
-        {isCurrent && <span className="dl-card__badge mono">Detected</span>}
-      </div>
-
-      <ul className="dl-card__assets">
-        {p.assets.map((a) => (
-          <li key={a.file}>
-            <a
-              className={`dl-btn ${a.primary ? "dl-btn--primary" : ""}`}
-              href={a.url}
-              download
-              title={`${a.file} · v${version}`}
-            >
-              <span className="dl-btn__main">
-                <span className="dl-btn__label">{a.label}</span>
-                <span className="dl-btn__detail">{a.detail}</span>
-              </span>
-              <span className="dl-btn__meta">
-                <span>{a.size}</span>
-                <DownloadIcon width={14} height={14} />
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export default function Download({ release }: { release: Release }) {
   const [os, setOs] = useState<Platform["id"] | null>(null);
   useEffect(() => setOs(detectOS()), []);
 
-  const ordered = useMemo(() => {
-    if (!os) return release.platforms;
-    return [...release.platforms].sort((a, b) =>
-      a.id === os ? -1 : b.id === os ? 1 : 0,
-    );
-  }, [os, release.platforms]);
+  const detected = release.platforms.find((p) => p.id === os) ?? null;
+  const primary =
+    detected?.assets.find((a) => a.primary) ?? detected?.assets[0] ?? null;
+  const others = release.platforms
+    .filter((p) => p.id !== detected?.id)
+    .map((p) => p.name);
 
   return (
     <section className="section" id="download">
-      <div className="container">
-        <Reveal className="dl-head">
-          <p className="mono mono--ember">Download</p>
-          <h2 className="section-title">Get Anvil for your machine.</h2>
-          <div className="dl-release">
-            <span className="mono">
-              Latest v{release.version} · Released {release.date}
+      <div className="container container--wide deck">
+        <div className="deck__copy">
+          <Reveal>
+            <p className="mono mono--ember">Download</p>
+            <h2 className="section-title">Get Anvil for your machine.</h2>
+            <div className="dl-release">
+              <span className="mono">
+                Latest v{release.version} · Released {release.date}
+              </span>
+              <a
+                className="dl-release__link mono mono--ember"
+                href={release.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Release notes
+                <ArrowIcon width={12} height={12} />
+              </a>
+            </div>
+          </Reveal>
+
+          <Reveal delay={90}>
+            {detected && primary ? (
+              <>
+                <a className="btn btn-ember deck__main" href={primary.url} download>
+                  <DownloadIcon width={17} height={17} />
+                  Download for {detected.name}
+                </a>
+                <p className="deck__meta mono">
+                  v{release.version} · {primary.label} · {primary.size}
+                </p>
+              </>
+            ) : (
+              <>
+                <a
+                  className="btn btn-ember deck__main"
+                  href={RELEASES_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <DownloadIcon width={17} height={17} />
+                  Download Anvil
+                </a>
+                <p className="deck__meta mono">v{release.version} · all platforms</p>
+              </>
+            )}
+            <p className="deck__note">
+              {others.length > 0
+                ? `Also built for ${others.join(" and ")} — every artifact is in the manifest.`
+                : "Every artifact is in the manifest."}
+            </p>
+          </Reveal>
+        </div>
+
+        <Reveal className="deck__panel" delay={140}>
+          <div className="deck__bar">
+            <span className="frame__dots" aria-hidden>
+              <span />
+              <span />
+              <span />
             </span>
+            <span className="mono">anvil — release manifest</span>
+            <span className="mono deck__ver">v{release.version}</span>
+          </div>
+          <ul className="deck__list">
+            {release.platforms.map((p) => {
+              const Icon = OS_ICON[p.id];
+              return p.assets.map((a) => (
+                <li key={a.file}>
+                  <a
+                    className={`deck__row ${p.id === os ? "deck__row--here" : ""}`}
+                    href={a.url}
+                    download
+                    title={`${p.name} · ${a.label} · v${release.version}`}
+                  >
+                    <span className="deck__os" aria-hidden>
+                      <Icon width={15} height={15} />
+                    </span>
+                    <span className="deck__file mono">{a.file}</span>
+                    <span className="deck__detail">{a.detail}</span>
+                    <span className="deck__size mono">{a.size}</span>
+                    <DownloadIcon width={13} height={13} />
+                  </a>
+                </li>
+              ));
+            })}
+          </ul>
+          <div className="deck__foot">
             <a
-              className="dl-release__link mono mono--ember"
-              href={release.url}
+              className="mono"
+              href={RELEASES_URL}
               target="_blank"
               rel="noreferrer"
             >
-              Release notes
-              <ArrowIcon width={12} height={12} />
+              older builds &amp; checksums
+              <ArrowIcon width={11} height={11} />
             </a>
           </div>
         </Reveal>
-
-        <div className="dl-grid">
-          {ordered.map((p, i) => (
-            <Reveal key={p.id} delay={i * 90}>
-              <PlatformCard p={p} version={release.version} isCurrent={p.id === os} />
-            </Reveal>
-          ))}
-        </div>
-
-        <p className="dl-foot">
-          Older builds and checksums live on{" "}
-          <a href={RELEASES_URL} target="_blank" rel="noreferrer">
-            GitHub releases
-          </a>
-          . Prefer to build from source? The <code>README</code> has you covered.
-        </p>
       </div>
     </section>
   );
