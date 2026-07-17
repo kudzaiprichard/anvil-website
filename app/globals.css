@@ -144,6 +144,28 @@ code {
   padding-block: clamp(88px, 11vw, 150px);
 }
 
+/*
+ * Full-page snap (desktop): each station takes one screen, content centered
+ * vertically. Sections taller than the viewport still scroll freely inside
+ * their snap area. Screen one is marquee + nav + hero exactly.
+ */
+@media (min-width: 1020px) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+  .section {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-block: 48px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .footer {
+    scroll-snap-align: end;
+  }
+}
+
 /* ---- type ---- */
 
 .mono {

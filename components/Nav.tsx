@@ -1,21 +1,13 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { AnvilMark, GitHubIcon } from "./icons";
 import { REPO_URL } from "@/lib/releases";
 
+/*
+ * The nav lives at the top of the page and scrolls away with it — the
+ * station rail and the download CTA take over once you're inside.
+ */
 export default function Nav({ version }: { version: string }) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header className={`nav ${scrolled ? "nav--scrolled" : ""}`}>
+    <header className="nav">
       <div className="container nav__inner">
         <a href="#top" className="brand" aria-label="Anvil home">
           <AnvilMark className="brand__mark" />
