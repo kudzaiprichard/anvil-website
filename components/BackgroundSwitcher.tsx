@@ -6,7 +6,6 @@ import GraphField from "./GraphField";
 import TopoField from "./TopoField";
 import LatticeField from "./LatticeField";
 import ForgeField from "./ForgeField";
-import SilkField from "./SilkField";
 import StarVoid from "./StarVoid";
 
 /*
@@ -25,7 +24,6 @@ const BACKGROUNDS: Array<{ name: string; Comp: ComponentType; space?: number }> 
   { name: "Topographic contours", Comp: TopoField, space: 1 },
   { name: "Reactive dot lattice", Comp: LatticeField },
   { name: "Molten forge floor", Comp: ForgeField },
-  { name: "Woven iron silk", Comp: SilkField, space: 1 },
 ];
 
 const DAY_MS = 86_400_000;

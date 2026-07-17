@@ -438,21 +438,6 @@
   border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
 }
 
-/* ---- scroll progress ---- */
-
-.progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  z-index: 60;
-  background: var(--ember);
-  transform-origin: left;
-  transform: scaleX(0);
-  pointer-events: none;
-}
-
 /* ---- brand lockup (footer) ---- */
 
 .brand {
@@ -489,16 +474,15 @@
   padding-bottom: clamp(40px, 6vw, 80px);
 }
 
-/* screen one: the ticker (~42px) + hero fill the viewport, and the hero
-   centers in what's left; snapping to its end keeps it flush */
+/* screen one: the hero owns the whole viewport, content centered */
 @media (min-width: 1020px) {
   .hero {
-    height: calc(100svh - 42px);
+    height: 100svh;
     min-height: 560px;
     display: flex;
     align-items: center;
     padding-block: 0;
-    scroll-snap-align: end;
+    scroll-snap-align: start;
   }
   .hero > .container {
     width: 100%;
@@ -839,53 +823,6 @@
   padding: 11px 16px;
   border-top: 1px solid var(--line);
   font-variant-numeric: tabular-nums;
-}
-
-/* ---- pattern ticker (very top of the page, scrolls away) ---- */
-
-.marquee {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  border-bottom: 1px solid var(--line);
-  /* opaque so the living backgrounds never show through the ticker */
-  background: var(--iron-1);
-  padding-block: 11px;
-  user-select: none;
-}
-.marquee__track {
-  display: flex;
-  gap: 56px;
-  width: max-content;
-  animation: marquee 36s linear infinite;
-}
-.marquee__group {
-  display: inline-flex;
-  align-items: center;
-  gap: 56px;
-}
-.marquee__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 56px;
-  font-size: 12px;
-}
-.marquee__item::after {
-  content: "";
-  width: 5px;
-  height: 5px;
-  background: var(--ember);
-  rotate: 45deg;
-}
-@keyframes marquee {
-  to {
-    transform: translateX(calc(-50% - 28px));
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marquee__track {
-    animation: none;
-  }
 }
 
 /* ---- manifesto (scroll-fill text) ---- */
