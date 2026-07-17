@@ -26,12 +26,9 @@ export default async function Home() {
         <Manifesto />
         <Features />
         <OpenSource />
-        {/* one snap station: download centered, footer riding its base */}
-        <div className="station-end">
-          <Download release={release} />
-          <Footer version={release.version} />
-        </div>
+        <Download release={release} />
       </main>
+      <Footer version={release.version} />
     </>
   );
 }

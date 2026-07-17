@@ -162,23 +162,20 @@ code {
     scroll-snap-stop: always;
   }
 
-  /* the last station holds download and the footer together: one snap
-     point, content centered, footer at its base — never adrift on its own */
-  .station-end {
+  /* the footer is its own full station: links centered in the upper field,
+     the giant watermark pinned to the page's very last edge */
+  .footer {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    margin-top: 0;
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  .station-end .section {
-    min-height: 0;
-    flex: 1;
-    scroll-snap-align: none;
-    scroll-snap-stop: normal;
-    padding-block: 48px 24px;
+  .footer__inner {
+    margin-top: auto;
   }
-  .station-end .footer {
+  .footer__mark {
     margin-top: auto;
   }
 }
