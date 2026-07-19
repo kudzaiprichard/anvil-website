@@ -25,8 +25,14 @@ export const SITE_DESCRIPTION =
 export const SITE_TAGLINE =
   "Free · Offline · Open source — no account, no telemetry, no AI crutch.";
 
-export const GITHUB_URL = "https://github.com/kudzaiprichard/anvil";
-export const RELEASES_URL = "https://github.com/kudzaiprichard/anvil-releases";
+/* GitHub repos as "owner/name" slugs, overridable via env (see lib/releases.ts
+   for the same resolution). Literal reads so NEXT_PUBLIC_ values inline at build. */
+const ANVIL_REPO = process.env.NEXT_PUBLIC_ANVIL_REPO ?? "kudzaiprichard/anvil";
+const RELEASES_REPO_SLUG =
+  process.env.NEXT_PUBLIC_RELEASES_REPO ?? "kudzaiprichard/anvil-releases";
+
+export const GITHUB_URL = `https://github.com/${ANVIL_REPO}`;
+export const RELEASES_URL = `https://github.com/${RELEASES_REPO_SLUG}`;
 export const AUTHOR_NAME = "Kudzai P Matizirofa";
 
 /* the site's dark iron ground, as hex for surfaces that can't speak oklch */

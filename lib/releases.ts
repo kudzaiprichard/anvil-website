@@ -8,12 +8,19 @@
  * release.
  */
 
-export const REPO_URL = "https://github.com/kudzaiprichard/anvil";
-export const RELEASES_REPO = "https://github.com/kudzaiprichard/anvil-releases";
+/* The two GitHub repos every link on the site derives from, as "owner/name"
+   slugs. Overridable via env so a fork can rebrand without touching code; the
+   defaults are the canonical Anvil repos. Kept literal so Next inlines the
+   NEXT_PUBLIC_ values into the client bundle at build time. */
+const ANVIL_REPO = process.env.NEXT_PUBLIC_ANVIL_REPO ?? "kudzaiprichard/anvil";
+const RELEASES_SLUG =
+  process.env.NEXT_PUBLIC_RELEASES_REPO ?? "kudzaiprichard/anvil-releases";
+
+export const REPO_URL = `https://github.com/${ANVIL_REPO}`;
+export const RELEASES_REPO = `https://github.com/${RELEASES_SLUG}`;
 export const RELEASES_URL = `${RELEASES_REPO}/releases`;
 
-const API_LATEST =
-  "https://api.github.com/repos/kudzaiprichard/anvil-releases/releases/latest";
+const API_LATEST = `https://api.github.com/repos/${RELEASES_SLUG}/releases/latest`;
 
 export type Asset = {
   label: string;
