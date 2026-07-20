@@ -4,73 +4,113 @@
 
 # Anvil — Website
 
-The marketing & download site for **[Anvil](https://github.com/kudzaiprichard/anvil)**, the free,
-offline, honest way to master DSA.
+The marketing &amp; download site for **[Anvil](https://github.com/kudzaiprichard/anvil)** — the free,
+offline, honest way to master the classic LeetCode &amp; NeetCode questions.
 
-Built with **Next.js 16** · React 19 · TypeScript. Themed to match the Anvil desktop app's
-iron-and-ember design system.
+**Next.js 16** (App Router) · React 19 · TypeScript · zero runtime dependencies beyond React.
 
 </div>
 
 ---
 
-## What this is
+## Overview
 
-A single-page site that introduces Anvil, explains why it exists, invites contributors, and points
-visitors at the latest release binaries for macOS, Windows, and Linux. The download buttons link
-straight to the assets published on
-[**anvil-releases**](https://github.com/kudzaiprichard/anvil-releases/releases) and show the current
-version and file sizes.
+A single-page site that introduces Anvil, makes the case for it, invites contributors, and routes
+visitors to the latest release binaries for macOS, Windows, and Linux. It is statically prerendered,
+ships no client-side data fetching, and calls no third-party services at runtime — the only network
+call happens at build/revalidation time, server-side, to resolve the latest release.
 
-Highlights:
+### Key characteristics
 
-- **Living background** — a full-page flow-field canvas of bone-and-ember particle streaks that
-  drifts with time, shifts on scroll, and bends away from the cursor.
-- **The product demoing itself** — a typed headline cycling DSA patterns, and a faux Anvil window
-  that materializes a solution line by line, then runs its test packs to green on loop.
-- **Iron & ember theme** — warm charcoal neutrals under one flat ember-copper accent, lifted from
-  the app's OKLCH design system. No glows, no gradients.
-- **Platform-aware downloads** — detects the visitor's OS and surfaces the right build first.
-- **Accessible & responsive** — keyboard focus states, reduced-motion support, mobile down to 360px.
+- **Release data is live, not hardcoded.** Version, date, file sizes, and download URLs are fetched
+  from the GitHub Releases API and cached with hourly ISR, so publishing a release updates the site
+  with no code change ([`lib/releases.ts`](./lib/releases.ts)).
+- **Platform-aware downloads.** The visitor's OS is detected client-side and the matching build is
+  surfaced first, with every artifact still listed in the manifest.
+- **Self-contained by design.** Fonts are self-hosted via `next/font`; images are local or generated
+  routes; a strict Content-Security-Policy (`default-src 'self'`) is enforced in
+  [`next.config.ts`](./next.config.ts) alongside HSTS, `X-Frame-Options`, and a locked-down
+  `Permissions-Policy`.
+- **Accessible &amp; responsive.** Keyboard focus states, `prefers-reduced-motion` fallbacks on every
+  animation, and a layout verified with no horizontal overflow from 320px phones to large monitors.
+- **SEO surfaces derive from one source.** Metadata, Open Graph, Twitter cards, the web manifest,
+  `robots`, `sitemap`, and JSON-LD all read from [`lib/site.ts`](./lib/site.ts).
 
-## Develop
+## Prerequisites
+
+- **Node.js 20.9+** (CI runs on Node 20; developed on Node 24).
+- **npm** (the repo ships a `package-lock.json`; use `npm ci` for reproducible installs).
+
+## Getting started
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev          # http://localhost:3000
 ```
 
-## Build
-
-```bash
-npm run typecheck  # tsc --noEmit
-npm run build      # production build
-npm start          # serve the production build
-```
-
-## Release links & versions
-
-Every version, date, file size, and download URL on the site is fetched live from the latest
-[anvil-releases](https://github.com/kudzaiprichard/anvil-releases/releases) release via the GitHub
-API ([`lib/releases.ts`](./lib/releases.ts)), revalidated hourly — publishing a new release updates
-the site automatically. If the API is unreachable, a pinned fallback release is served; when asset
-naming changes, update `ASSET_RULES` (and the fallback) in the same file.
-
-## Contributing
-
-Every change lands via pull request into a protected `main`, following the same conventions as the
-main Anvil repo:
-
-- Short-lived `feat/… · fix/… · docs/… · chore/…` branches.
-- Conventional commits — `type(scope): summary` followed by one `- path: what changed` bullet per file
-  (enforced by the `commit-msg` hook in [`.githooks`](./.githooks)).
-- CI (`Lint & build (web)`) must pass and a code-owner must approve before merge.
-
-Enable the hook after cloning:
+Enable the commit-message hook once after cloning (see [Contributing](#contributing)):
 
 ```bash
 git config core.hooksPath .githooks
 ```
+
+## Scripts
+
+| Script              | Purpose                                          |
+| ------------------- | ------------------------------------------------ |
+| `npm run dev`       | Start the dev server with HMR.                   |
+| `npm run typecheck` | `tsc --noEmit` — strict type checking, no build. |
+| `npm run build`     | Production build (static prerender).             |
+| `npm start`         | Serve the production build.                      |
+
+## Configuration
+
+All configuration is optional — the site builds and runs with no `.env` file, falling back to the
+canonical Anvil URLs. Copy [`.env.example`](./.env.example) to `.env` to override. Every value is a
+public URL; there are no secrets.
+
+| Variable                    | Purpose                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SITE_URL`      | Canonical production URL for absolute SEO links (canonical, OG, sitemap, JSON-LD). |
+| `NEXT_PUBLIC_ANVIL_REPO`    | `owner/name` of the source repo — drives every GitHub link.                    |
+| `NEXT_PUBLIC_RELEASES_REPO` | `owner/name` of the releases repo — drives the download manifest.              |
+
+On Vercel, `NEXT_PUBLIC_SITE_URL` falls back to the injected production domain if unset. See
+[`lib/site.ts`](./lib/site.ts) for the exact resolution order.
+
+## Project structure
+
+```
+app/            App Router: root layout, page, metadata & generated routes
+                (opengraph-image, apple-icon, manifest, robots, sitemap),
+                and the global + component stylesheets.
+components/     UI and the animated canvas backgrounds (FieldCanvas, GraphField,
+                TopoField, LatticeField, ForgeField, StarVoid) plus the section
+                components that compose the page.
+lib/            releases.ts  — live release data + platform/asset mapping.
+                site.ts      — single source of truth for site identity & SEO.
+                anvil-mark.tsx — the brand mark as an inline SVG.
+public/         Static icons.
+```
+
+### How release data flows
+
+`getLatestRelease()` fetches `releases/latest` from the GitHub API for the configured releases repo,
+revalidated hourly (ISR). `ASSET_RULES` maps each published asset's filename onto a platform slot
+(macOS / Windows / Linux) with a human label. If the API is unreachable (offline build, rate limit),
+a pinned `FALLBACK` release is served instead. When release asset naming changes, update `ASSET_RULES`
+**and** the fallback in [`lib/releases.ts`](./lib/releases.ts).
+
+## Contributing
+
+Every change lands via pull request into a protected `main`, mirroring the conventions of the main
+Anvil repo:
+
+- Short-lived `feat/…`, `fix/…`, `docs/…`, `chore/…` branches off `main`.
+- Conventional commits — `type(scope): summary` followed by one `- path: what changed` bullet per
+  file, enforced by the `commit-msg` hook in [`.githooks`](./.githooks).
+- CI (`Lint & build (web)`) runs typecheck + build and must pass, and a code owner must approve,
+  before merge.
 
 ## License
 
