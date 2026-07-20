@@ -63,8 +63,8 @@ export default function Features() {
             <span className="mono">Judge</span>
             <h3 className="bento__title">Oracle-verified judging</h3>
             <p className="bento__body">
-              No hand-typed answer keys — reference solutions are cross-checked
-              against an independent brute-force oracle.
+              Every question ships with a test pack we forged — reference
+              solutions cross-checked against an independent brute-force oracle.
             </p>
             <div className="viz viz-checks" aria-hidden>
               <span><i>✓</i>python reference</span>

@@ -17,7 +17,7 @@ export default function OpenSource() {
           <h2 className="section-title">Open source. Come forge it.</h2>
           <p className="lead" style={{ marginTop: 22 }}>
             MIT-licensed, <code>main</code> protected, every change lands by pull
-            request. Code, docs, design, or original problems — pick an issue and
+            request. Code, docs, design, or test packs — pick an issue and
             start.
           </p>
           <div className="os__cta">

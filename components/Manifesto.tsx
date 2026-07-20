@@ -11,8 +11,8 @@ import { useEffect, useRef } from "react";
 const TEXT =
   "Online judges want an account, a network, and an AI copilot doing the thinking. " +
   "Offline tools hand you a bare judge and a flat list of problems. " +
-  "Anvil refuses both: *a guided course* of 100% original problems, " +
-  "judged by *an independent oracle,* entirely *on your machine.*";
+  "Anvil refuses both: *a guided course* through the LeetCode and NeetCode classics, " +
+  "every question judged by *an independent oracle,* entirely *on your machine.*";
 
 // pre-split words, tracking which fall inside *ember phrases*
 const WORDS = (() => {

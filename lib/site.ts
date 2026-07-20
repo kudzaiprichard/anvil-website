@@ -21,7 +21,7 @@ export const SITE_URL = envUrl
 export const SITE_NAME = "Anvil";
 export const SITE_TITLE = "Anvil — The free, offline, honest way to master DSA";
 export const SITE_DESCRIPTION =
-  "Anvil is an open-source, offline-first desktop app for coding-interview & DSA practice. A guided course of original problems, judged against real test cases. No account. No AI crutch. MIT-licensed.";
+  "Anvil is an open-source, offline-first desktop app for coding-interview & DSA practice. Master the classic LeetCode & NeetCode questions against oracle-verified test packs. No account. No AI crutch. MIT-licensed.";
 export const SITE_TAGLINE =
   "Free · Offline · Open source — no account, no telemetry, no AI crutch.";
 

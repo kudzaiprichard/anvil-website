@@ -54,8 +54,9 @@ export default function Hero({
             style={{ "--rise-delay": "460ms" } as React.CSSProperties}
           >
             Anvil is a desktop app that teaches you algorithm patterns, then
-            judges your code against real test cases — fully offline. No
-            account. No network. No AI crutch.
+            judges your code on the classic LeetCode &amp; NeetCode questions
+            — oracle-verified test packs, fully offline. No account. No
+            network. No AI crutch.
           </p>
 
           <div

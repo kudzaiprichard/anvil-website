@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: SITE_TITLE,
     description:
-      "Open-source, offline-first DSA practice. A guided course of original problems, oracle-verified judging, no AI crutch. Free & MIT-licensed.",
+      "Open-source, offline-first DSA practice. The classic LeetCode & NeetCode questions, oracle-verified judging, no AI crutch. Free & MIT-licensed.",
     url: SITE_URL,
     siteName: SITE_NAME,
     type: "website",
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_TITLE,
     description:
-      "Open-source, offline-first DSA practice. A guided course of original problems. No account, no AI crutch. MIT-licensed.",
+      "Open-source, offline-first DSA practice. The classic LeetCode & NeetCode questions, judged on your machine. No account, no AI crutch. MIT-licensed.",
   },
   icons: {
     icon: [
