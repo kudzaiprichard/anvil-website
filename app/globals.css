@@ -141,11 +141,18 @@ code {
   max-width: 1280px;
 }
 
-/* narrow desktops: widen the gutter so the fixed station rail never sits on
-   top of the content column (the rail's ticks end ~63px from the edge) */
+/* narrow-to-mid desktops: widen the gutter so the fixed station rail — a
+   labeled stop reaches ~131px from the edge — never sits under the content
+   column. Below 1280px the wide container hugs the edge, so the full 144px;
+   above, the container's own centering grows and the extra pad melts away. */
 @media (min-width: 1020px) and (max-width: 1279px) {
   :root {
-    --pad: 84px;
+    --pad: 144px;
+  }
+}
+@media (min-width: 1280px) and (max-width: 1599px) {
+  :root {
+    --pad: max(24px, calc(784px - 50vw));
   }
 }
 

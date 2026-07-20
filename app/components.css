@@ -386,6 +386,196 @@
   background: var(--ember);
 }
 
+/* ---- station dock + map (small-screen nav) ----
+   Below 1020px the rail has no room, so the nav becomes a "Menu" pill
+   pinned top-right — the hamburger everyone recognizes, drawn as three
+   rail ticks with the middle one ember — that unfolds into a full-screen
+   station map in the page's own language. */
+
+.dock {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in oklab, var(--iron-1) 72%, transparent);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.dock:hover {
+  border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
+}
+.dock .mono {
+  color: var(--bone);
+}
+/* the hamburger, in rail-tick DNA: staggered hairlines, the short one ember */
+.dock__ticks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 17px;
+}
+.dock__ticks i {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--bone);
+  transition: width 0.25s var(--ease-out);
+}
+.dock__ticks i:nth-child(2) {
+  width: 62%;
+  background: var(--ember);
+}
+.dock:hover .dock__ticks i:nth-child(2) {
+  width: 100%;
+}
+@media (min-width: 1020px) {
+  .dock {
+    display: none;
+  }
+}
+
+.map {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) var(--pad)
+    calc(20px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in oklab, var(--iron-0) 94%, transparent);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s;
+}
+.map--open {
+  opacity: 1;
+  visibility: visible;
+}
+@media (min-width: 1020px) {
+  .map {
+    display: none;
+  }
+}
+
+.map__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 8px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.map__close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in oklab, var(--iron-1) 70%, transparent);
+  color: var(--bone);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.map__close:hover {
+  color: var(--ember);
+  border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
+}
+
+/* the stops: big type, hairline running out to the edge, ember where you are */
+.map__list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.map__stop {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 2px;
+  border-bottom: 1px solid var(--line);
+  opacity: 0;
+  translate: 0 16px;
+  transition:
+    opacity 0.4s var(--ease-out),
+    translate 0.4s var(--ease-out);
+}
+.map__stop:first-child {
+  border-top: 1px solid var(--line);
+}
+.map--open .map__stop {
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: calc(90ms + var(--stop-delay, 0ms));
+}
+.map__num {
+  min-width: 26px;
+  font-size: 11px;
+}
+.map__label {
+  font-size: clamp(1.55rem, 6vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--bone);
+  transition: color 0.2s ease;
+}
+.map__line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.map__here {
+  width: 7px;
+  height: 7px;
+  background: var(--ember);
+  rotate: 45deg;
+}
+.map__stop.is-active .map__num,
+.map__stop.is-active .map__label {
+  color: var(--ember);
+}
+.map__stop.is-active .map__line {
+  background: color-mix(in oklab, var(--ember) 45%, transparent);
+}
+.map__stop:active .map__label {
+  color: var(--ember);
+}
+
+.map__foot {
+  padding-top: 16px;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map,
+  .map__stop,
+  .map--open .map__stop {
+    transition: none;
+  }
+  .map__stop {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 /* ---- background console (corner clock + manual prev/next) ---- */
 
 .bg-console {
@@ -397,6 +587,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+/* small screens run the Menu nav instead of the rail — the corner clock and
+   background steppers would only crowd them, so the console sits this out */
+@media (max-width: 1019px) {
+  .bg-console {
+    display: none;
+  }
 }
 .bg-console__clock {
   display: flex;
