@@ -390,8 +390,9 @@
 
 .bg-console {
   position: fixed;
-  right: 18px;
-  bottom: 16px;
+  /* env() keeps the console clear of curved corners and the iOS home bar */
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 40;
   display: flex;
   align-items: center;
@@ -436,6 +437,15 @@
 .bg-console__btn:hover {
   color: var(--ember);
   border-color: color-mix(in oklab, var(--ember) 55%, var(--line-strong));
+}
+
+/* touch devices: the 26px buttons are too small a target for a thumb */
+@media (pointer: coarse) {
+  .bg-console__btn {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+  }
 }
 
 /* ---- brand lockup (footer) ---- */
@@ -550,6 +560,13 @@
   line-height: 1;
   margin-top: 30px;
 }
+/* narrow phones: track the viewport so "sliding window" — the longest cycled
+   term — stays on one line instead of reflowing mid-animation */
+@media (max-width: 480px) {
+  .hero__title {
+    font-size: clamp(2rem, 10.5vw, 2.9rem);
+  }
+}
 .hero__title .typed {
   color: var(--ember);
 }
@@ -605,6 +622,29 @@
 }
 .hero__spec + .hero__spec {
   border-left: 1px solid var(--line);
+}
+/* small phones: three columns crush the labels — read as ledger rows instead */
+@media (max-width: 559px) {
+  .hero__specs {
+    grid-template-columns: 1fr;
+  }
+  .hero__spec {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 2px;
+  }
+  .hero__spec:first-child {
+    padding-left: 2px;
+  }
+  .hero__spec + .hero__spec {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .hero__spec .mono {
+    text-align: right;
+  }
 }
 .hero__spec b {
   font-size: 1.45rem;
@@ -691,7 +731,10 @@
 }
 
 .frame__bar {
-  display: flex;
+  /* dots · title · env — the minmax(0,1fr) track lets the nowrap title
+     ellipsize without inflating the bar's (and the page's) min-content */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   padding: 12px 16px;
@@ -713,9 +756,13 @@
 .frame__title {
   text-transform: none;
   letter-spacing: 0.05em;
+  /* the filename yields before the bar wraps on a narrow phone */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .frame__env {
-  margin-left: auto;
+  white-space: nowrap;
 }
 
 .frame__body {
@@ -740,6 +787,16 @@
   .frame__code {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+  }
+}
+/* small phones: tighter type so the solution fits without sideways scroll */
+@media (max-width: 480px) {
+  .frame__code {
+    padding: 16px;
+    font-size: 11.5px;
+  }
+  .frame__test {
+    font-size: 11.5px;
   }
 }
 .frame__line {
@@ -817,9 +874,10 @@
 
 .frame__status {
   display: flex;
+  flex-wrap: wrap; /* the two readouts stack instead of overflowing a 320px phone */
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 4px 14px;
   padding: 11px 16px;
   border-top: 1px solid var(--line);
   font-variant-numeric: tabular-nums;
@@ -920,6 +978,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0 28px;
+  }
+}
+/* small phones: paired columns squeeze the long labels — one ledger column */
+@media (max-width: 520px) {
+  .inside__stats {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1208,11 +1272,19 @@
   overflow: hidden;
 }
 .deck__bar {
-  display: flex;
+  /* dots · title · version — same intrinsic-safe bar as the app frame */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--line);
+}
+.deck__bar > .mono:not(.deck__ver) {
+  /* the panel title yields before the bar overflows a narrow phone */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .deck__bar .mono {
   text-transform: none;
@@ -1322,6 +1394,16 @@
 @media (max-width: 560px) {
   .deck__detail {
     display: none;
+  }
+}
+/* touch devices: manifest rows and footer links grow into comfortable targets */
+@media (pointer: coarse) {
+  .deck__row {
+    padding-block: 13px;
+  }
+  .footer__col a {
+    display: inline-block;
+    padding-block: 2px;
   }
 }
 

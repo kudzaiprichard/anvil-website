@@ -35,7 +35,8 @@
 
   --radius: 16px;
   --maxw: 1140px;
-  --pad: 24px;
+  /* fluid gutter: 18px on a 320px phone, 24px from ~480px up */
+  --pad: clamp(18px, 5vw, 24px);
 
   --font-sans: var(--font-archivo), system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
@@ -140,8 +141,33 @@ code {
   max-width: 1280px;
 }
 
+/* narrow desktops: widen the gutter so the fixed station rail never sits on
+   top of the content column (the rail's ticks end ~63px from the edge) */
+@media (min-width: 1020px) and (max-width: 1279px) {
+  :root {
+    --pad: 84px;
+  }
+}
+
+/* big monitors: let the plate breathe instead of floating in a void */
+@media (min-width: 1800px) {
+  :root {
+    --maxw: 1240px;
+  }
+  .container--wide {
+    max-width: 1440px;
+  }
+}
+
 .section {
-  padding-block: clamp(88px, 11vw, 150px);
+  padding-block: clamp(72px, 11vw, 150px);
+}
+
+/* phones held sideways: the tall rhythm wastes the little height there is */
+@media (max-width: 1019px) and (max-height: 480px) {
+  .section {
+    padding-block: 48px;
+  }
 }
 
 /*
@@ -272,6 +298,17 @@ h3 {
 .btn-sm {
   padding: 10px 18px;
   font-size: 0.85rem;
+}
+
+/* the narrowest phones: paired CTAs stack full-width instead of wrapping
+   into a lopsided pile (the footer's small star button keeps its size) */
+@media (max-width: 420px) {
+  .hero__cta .btn,
+  .nf__actions .btn,
+  .os__cta .btn,
+  .deck__main {
+    width: 100%;
+  }
 }
 
 /* ---- scroll reveal ---- */
